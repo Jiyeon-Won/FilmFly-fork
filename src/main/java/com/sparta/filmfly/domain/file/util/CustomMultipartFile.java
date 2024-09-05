@@ -53,7 +53,7 @@ public class CustomMultipartFile implements MultipartFile {
 
     @Override
     public void transferTo(File dest) throws IOException, IllegalStateException {
-        if (file.renameTo(dest) == false) {
+        if (!file.renameTo(dest)) {
             throw new IOException("Failed to transfer file");
         }
     }

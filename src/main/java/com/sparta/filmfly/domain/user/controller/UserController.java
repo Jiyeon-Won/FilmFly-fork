@@ -7,7 +7,7 @@ import com.sparta.filmfly.domain.user.service.UserService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
-import com.sparta.filmfly.global.common.response.ResponseUtils;
+import com.sparta.filmfly.global.util.ResponseUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;

@@ -1,7 +1,7 @@
 package com.sparta.filmfly.global.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.filmfly.global.common.response.ResponseUtils;
+import com.sparta.filmfly.global.util.ResponseUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

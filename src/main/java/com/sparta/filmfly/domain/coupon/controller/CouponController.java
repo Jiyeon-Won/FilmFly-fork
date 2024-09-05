@@ -6,7 +6,7 @@ import com.sparta.filmfly.domain.coupon.dto.CouponResponseDto;
 import com.sparta.filmfly.domain.coupon.service.CouponService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
-import com.sparta.filmfly.global.common.response.ResponseUtils;
+import com.sparta.filmfly.global.util.ResponseUtils;
 import com.sparta.filmfly.global.util.PageUtils;
 import jakarta.validation.Valid;
 import java.util.List;

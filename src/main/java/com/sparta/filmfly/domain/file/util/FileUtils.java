@@ -19,15 +19,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-@Component
 public class FileUtils {
 
-    private final String uploadLocation = "/src/main/resources/static/temp/";
+    private static final String uploadLocation = "/src/main/resources/static/temp/";
 
     /**
      * 임시 저장된 이미지 폴더 경로
      */
-    public String getAbsoluteUploadFolder() {
+    public static String getAbsoluteUploadFolder() {
         try {
             File file = new File("");
             String currentAbsolutePath = file.getAbsolutePath() + uploadLocation;
@@ -44,17 +43,16 @@ public class FileUtils {
     /**
      * 파일 이름 앞에 UUID 붙이기 36자 중에 10자만 사용
      */
-    public String createUuidFileName(String originalFileName) {
-        //String extension = extractExtension(originalFileName);
-        //return UUID.randomUUID() + "." + extension;
-        return UUID.randomUUID().toString().substring(0, 10) + originalFileName;
+    public static String createUuidFileName(String originalFileName) {
+        String extension = extractExtension(originalFileName);
+        return UUID.randomUUID() + "." + extension;
     }
 
     /**
      * url 끝에 FilmeName 추출
      * http://localhost:8080/temp/9bee7b11-3고양이.jpg  -> 9bee7b11-3고양이.jpg
      */
-    public Map<String, String> extractFileName(String url) {
+    public static Map<String, String> extractFileName(String url) {
         if (url == null || url.isEmpty()) {
             return null;
         }
@@ -80,14 +78,14 @@ public class FileUtils {
     /**
      *  abc.jpg 에서 abc 부분
      */
-    public String extractOriginalName(String originalFileName) {
+    public static String extractOriginalName(String originalFileName) {
         return originalFileName.substring(0, originalFileName.indexOf("."));
     }
 
     /**
      * .jpg 같은
      */
-    public String extractExtension(String originalFileName) {
+    public static String extractExtension(String originalFileName) {
         int point = originalFileName.lastIndexOf(".");
         return originalFileName.substring(point + 1);
     }
@@ -95,11 +93,8 @@ public class FileUtils {
     /**
      * local 파일 삭제
      */
-    public void deleteFileToLocal(String imageName) {
-        // 주어진 파일 경로와 이름을 기반으로 파일 경로 객체 생성
-        //log.error("1 : {} \n 2 : {}",getAbsoluteUploadFolder(),imageName);
+    public static void deleteFileToLocal(String imageName) {
         Path path = Paths.get(getAbsoluteUploadFolder(), imageName);
-        //log.error("3 : {}",path);
         try {
             // 파일 삭제
             Files.delete(path);
@@ -108,15 +103,14 @@ public class FileUtils {
         }
     }
 
-
     /**
      * url 한글로 표시
      * 7e5bbdd2-c%EA%B3%A0%EC%96%91%EC%9D%B4.jpg -> 7e5bbdd2-c고양이.jpg
      */
-    public String decodeUrlsInContent(String content) {
+    public static String decodeUrlsInContent(String content) {
         Pattern pattern = Pattern.compile("src=\"(http[^\"]+)\"");
         Matcher matcher = pattern.matcher(content);
-        StringBuffer decodedContent = new StringBuffer();
+        StringBuilder decodedContent = new StringBuilder();
 
         while (matcher.find()) {
             String encodedUrl = matcher.group(1);

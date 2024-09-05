@@ -11,7 +11,7 @@ import com.sparta.filmfly.domain.user.dto.UserStateChangeRequestDto;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import com.sparta.filmfly.domain.user.service.UserService;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
-import com.sparta.filmfly.global.common.response.ResponseUtils;
+import com.sparta.filmfly.global.util.ResponseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

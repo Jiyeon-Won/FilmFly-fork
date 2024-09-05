@@ -4,7 +4,7 @@ import com.sparta.filmfly.domain.report.dto.ReportRequestDto;
 import com.sparta.filmfly.domain.report.service.ReportService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
-import com.sparta.filmfly.global.common.response.ResponseUtils;
+import com.sparta.filmfly.global.util.ResponseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

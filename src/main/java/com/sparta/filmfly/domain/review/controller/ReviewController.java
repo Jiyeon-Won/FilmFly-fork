@@ -6,7 +6,7 @@ import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
-import com.sparta.filmfly.global.common.response.ResponseUtils;
+import com.sparta.filmfly.global.util.ResponseUtils;
 import com.sparta.filmfly.global.util.PageUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

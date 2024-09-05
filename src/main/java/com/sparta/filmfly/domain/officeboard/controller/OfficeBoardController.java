@@ -7,7 +7,7 @@ import com.sparta.filmfly.domain.officeboard.dto.OfficeBoardUpdateResponseDto;
 import com.sparta.filmfly.domain.officeboard.service.OfficeBoardService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
-import com.sparta.filmfly.global.common.response.ResponseUtils;
+import com.sparta.filmfly.global.util.ResponseUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

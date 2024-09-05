@@ -2,7 +2,7 @@ package com.sparta.filmfly.global.exception;
 
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
-import com.sparta.filmfly.global.common.response.ResponseUtils;
+import com.sparta.filmfly.global.util.ResponseUtils;
 import com.sparta.filmfly.global.exception.custom.GlobalException;
 import java.util.ArrayList;
 import java.util.List;

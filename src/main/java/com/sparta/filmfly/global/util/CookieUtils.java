@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseCookie;
 import org.springframework.web.util.WebUtils;
 
-public class CookieUtils {
+public abstract class CookieUtils {
 
     /**
      * 쿠키 생성

@@ -3,7 +3,7 @@ package com.sparta.filmfly.domain.user.controller;
 import com.sparta.filmfly.domain.user.dto.EmailVerificationRequestDto;
 import com.sparta.filmfly.domain.user.service.EmailVerificationService;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
-import com.sparta.filmfly.global.common.response.ResponseUtils;
+import com.sparta.filmfly.global.util.ResponseUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

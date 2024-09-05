@@ -10,11 +10,11 @@ import com.sparta.filmfly.domain.coupon.repository.UserCouponRepository;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
-import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
-import com.sparta.filmfly.global.util.StringUtils;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class CouponService {
+
+    private static final int COUPON_CODE_LENGTH = 8;
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final Random random = new SecureRandom();
 
     private final CouponRepository couponRepository;
     private final UserCouponRepository userCouponRepository;
@@ -46,7 +50,7 @@ public class CouponService {
         for (int i = 0; i < requestDto.getQuantity(); i++) {
             // 랜덤 값(title) 중복되면 반복문 돌아감
             do {
-                title = StringUtils.generateRandomCouponCode();
+                title = generateRandomCouponCode();
             } while (couponRepository.existsByTitle(title));
             Coupon coupon = Coupon.builder()
                     .title(title)
@@ -146,4 +150,14 @@ public class CouponService {
         }
     }
 
+    /**
+     * 쿠폰 번호 랜덤 배정하는 메서드
+     */
+    public static String generateRandomCouponCode() {
+        StringBuilder code = new StringBuilder(COUPON_CODE_LENGTH);
+        for (int i = 0; i < COUPON_CODE_LENGTH; i++) {
+            code.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
+        }
+        return code.toString();
+    }
 }

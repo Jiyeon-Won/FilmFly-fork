@@ -1,5 +1,7 @@
-package com.sparta.filmfly.global.common.response;
+package com.sparta.filmfly.global.util;
 
+import com.sparta.filmfly.global.common.response.DataResponseDto;
+import com.sparta.filmfly.global.common.response.MessageResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

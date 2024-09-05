@@ -6,7 +6,7 @@ import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
-import com.sparta.filmfly.global.common.response.ResponseUtils;
+import com.sparta.filmfly.global.util.ResponseUtils;
 import com.sparta.filmfly.global.exception.custom.detail.*;
 import com.sparta.filmfly.global.util.CookieUtils;
 import com.sparta.filmfly.global.util.JwtUtils;
