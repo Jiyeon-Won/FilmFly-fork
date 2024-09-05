@@ -16,10 +16,8 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final long ACCESS_TOKEN_TIME = 30 * 60 * 1000L * 60 * 60;
     public static final long REFRESH_TOKEN_TIME = 14 * 24 * 60 * 60 * 1000L;
-    private static final String USER_ID_CLAIM = "userId";
 
     @Value("${jwt_secret_key}")
     private String secretKey;
@@ -35,9 +33,7 @@ public class JwtUtils {
         try {
             byte[] bytes = Base64.getDecoder().decode(secretKey);
             key = Keys.hmacShaKeyFor(bytes);
-            log.debug("Secret key initialized successfully.");
         } catch (IllegalArgumentException e) {
-            log.error("Failed to decode Base64 secret key: {}", e.getMessage());
             throw new IllegalArgumentException("Base64 비밀 키 디코딩 실패: " + e.getMessage(), e);
         }
     }

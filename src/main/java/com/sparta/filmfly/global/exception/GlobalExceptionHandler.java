@@ -23,10 +23,10 @@ public class GlobalExceptionHandler {
         return ResponseUtils.of(e.getExamCodeEnum().getHttpStatus(), e.getMessage());
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<MessageResponseDto> handleIllegalArgumentException(IllegalArgumentException e) {
-        log.error("에러: ", e);
-        return ResponseUtils.of(HttpStatus.BAD_REQUEST, e.getMessage());
+        log.error("서버 에러: ", e);
+        return ResponseUtils.of(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
