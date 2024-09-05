@@ -21,7 +21,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -36,7 +35,6 @@ public class WebSecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
-    private final PasswordEncoder passwordEncoder;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomExceptionHandlingFilter customExceptionHandlingFilter;
@@ -48,7 +46,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtils, userRepository, objectMapper, passwordEncoder);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtils, userRepository, objectMapper);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
@@ -88,9 +86,10 @@ public class WebSecurityConfig {
                     .anyRequest().authenticated()
         );
 
-        http.exceptionHandling(exceptionHandling -> exceptionHandling
-            .authenticationEntryPoint(customAuthenticationEntryPoint)
-            .accessDeniedHandler(customAccessDeniedHandler)
+        http.exceptionHandling(exceptionHandling ->
+            exceptionHandling
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
         );
 
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);

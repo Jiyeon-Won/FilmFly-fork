@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: ${DB_URL}
+    url: jdbc:mysql://${DB_URL}:3306/filmfly?serverTimezone=Asia/Seoul
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -86,5 +86,3 @@ cloud:
 memcached:
   host: ${MEMCACHED_HOST}
   port: ${MEMCACHED_PORT:11211}
-
-
