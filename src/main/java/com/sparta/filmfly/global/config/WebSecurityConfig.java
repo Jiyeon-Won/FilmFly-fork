@@ -5,7 +5,9 @@ import com.sparta.filmfly.global.auth.CustomAccessDeniedHandler;
 import com.sparta.filmfly.global.auth.CustomAuthenticationEntryPoint;
 import com.sparta.filmfly.global.auth.JwtAuthenticationFilter;
 import com.sparta.filmfly.global.auth.JwtAuthorizationFilter;
-import com.sparta.filmfly.global.auth.JwtUtils;
+import com.sparta.filmfly.global.auth.JwtLogoutHandler;
+import com.sparta.filmfly.global.auth.JwtLogoutSuccessHandler;
+import com.sparta.filmfly.global.util.JwtUtils;
 import com.sparta.filmfly.global.auth.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +38,8 @@ public class WebSecurityConfig {
     private final ObjectMapper objectMapper;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final JwtLogoutHandler jwtLogoutHandler;
+    private final JwtLogoutSuccessHandler jwtLogoutSuccessHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -92,6 +96,13 @@ public class WebSecurityConfig {
 
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http.logout(logout ->
+                logout
+                    .logoutUrl("/users/logout")
+                    .addLogoutHandler(jwtLogoutHandler)
+                    .logoutSuccessHandler(jwtLogoutSuccessHandler)
+        );
 
         return http.build();
     }

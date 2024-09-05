@@ -1,4 +1,4 @@
-package com.sparta.filmfly.global.auth;
+package com.sparta.filmfly.global.util;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -69,12 +69,8 @@ public class JwtUtils {
     /**
      * JWT 토큰에서 사용자 정보 추출
      */
-    public Optional<Claims> getClaimsFromToken(String token) {
-        if (!validateToken(token)) {
-            return Optional.empty();
-        }
-        Claims body = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-        return Optional.of(body);
+    public Claims getClaimsFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
     /**

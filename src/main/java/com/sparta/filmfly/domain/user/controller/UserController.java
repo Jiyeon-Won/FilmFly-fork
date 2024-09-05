@@ -133,28 +133,6 @@ public class UserController {
     }
 
     /**
-     * 로그아웃
-     */
-    @PostMapping("/logout")
-    public ResponseEntity<MessageResponseDto> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletResponse response) {
-        userService.logout(userDetails.getUser());
-
-        // 쿠키를 무효화하여 삭제
-        Cookie accessTokenCookie = new Cookie("accessToken", null);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(0);
-        response.addCookie(accessTokenCookie);
-
-        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(0);
-        response.addCookie(refreshTokenCookie);
-
-        SecurityContextHolder.clearContext();
-        return ResponseUtils.success();
-    }
-
-    /**
      * 회원탈퇴
      */
     @DeleteMapping("/withdraw")
@@ -180,7 +158,6 @@ public class UserController {
         SecurityContextHolder.clearContext();
         return ResponseUtils.success();
     }
-
 
     /**
      * 본인 활성화 시키기(탈퇴 상태일때)

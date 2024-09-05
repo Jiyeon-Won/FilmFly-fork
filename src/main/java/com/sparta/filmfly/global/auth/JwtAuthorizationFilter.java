@@ -3,6 +3,7 @@ package com.sparta.filmfly.global.auth;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.util.CookieUtils;
+import com.sparta.filmfly.global.util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -54,11 +55,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         // accessToken 검사
         if (jwtUtils.validateToken(accessToken)) {
             // SecurityContext에 Authentication 객체 추가
-            Optional<Claims> claimsFromAccessToken = jwtUtils.getClaimsFromToken(accessToken);
-            claimsFromAccessToken.ifPresent(claims -> {
-                String username = claims.getSubject();
-                setAuthentication(username);
-            });
+            String username = jwtUtils.getClaimsFromToken(accessToken).getSubject();
+            setAuthentication(username);
         } else {
             // refreshToken 검사
             String refreshToken = CookieUtils.getCookie(req, "refreshToken");
@@ -67,20 +65,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            Optional<Claims> claimsFromRefreshToken = jwtUtils.getClaimsFromToken(refreshToken);
-            claimsFromRefreshToken.ifPresent(claims -> {
-                String username = claims.getSubject();
+            Claims claimsFromRefreshToken = jwtUtils.getClaimsFromToken(refreshToken);
+            String username = claimsFromRefreshToken.getSubject();
 
-                Optional<User> findUser = userRepository.findByUsername(username);
-                findUser.ifPresent(user -> {
-                    if (refreshToken.equals(user.getRefreshToken())) {
-                        // accessToken은 항상 재발급
-                        // refreshToken은 만료 시간이 1일 남은 경우 재발급
-                        handleTokenReissue(username, res, claims);
+            Optional<User> findUser = userRepository.findByUsername(username);
+            findUser.ifPresent(user -> {
+                if (refreshToken.equals(user.getRefreshToken())) {
+                    // accessToken은 항상 재발급
+                    // refreshToken은 만료 시간이 1일 남은 경우 재발급
+                    handleTokenReissue(username, res, claimsFromRefreshToken);
 
-                        setAuthentication(username);
-                    }
-                });
+                    setAuthentication(username);
+                }
             });
         }
 

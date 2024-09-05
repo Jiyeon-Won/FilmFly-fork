@@ -186,15 +186,6 @@ public class UserService {
     }
 
     /**
-     * 로그아웃
-     */
-    @Transactional
-    public void logout(User user) {
-        user.deleteRefreshToken();
-        userRepository.save(user);
-    }
-
-    /**
      * 회원 탈퇴
      */
     @Transactional
