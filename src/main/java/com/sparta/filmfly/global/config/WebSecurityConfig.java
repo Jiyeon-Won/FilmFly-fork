@@ -6,7 +6,7 @@ import com.sparta.filmfly.global.auth.CustomAuthenticationEntryPoint;
 import com.sparta.filmfly.global.auth.CustomExceptionHandlingFilter;
 import com.sparta.filmfly.global.auth.JwtAuthenticationFilter;
 import com.sparta.filmfly.global.auth.JwtAuthorizationFilter;
-import com.sparta.filmfly.global.auth.JwtProvider;
+import com.sparta.filmfly.global.auth.JwtUtils;
 import com.sparta.filmfly.global.auth.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +31,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig {
 
-    private final JwtProvider jwtProvider;
+    private final JwtUtils jwtUtils;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserRepository userRepository;
@@ -48,14 +48,14 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtProvider, userRepository, objectMapper, passwordEncoder);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtils, userRepository, objectMapper, passwordEncoder);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtProvider, userDetailsService, userRepository, objectMapper);
+        return new JwtAuthorizationFilter(jwtUtils, userDetailsService, userRepository);
     }
 
     @Bean
@@ -67,16 +67,6 @@ public class WebSecurityConfig {
 
         http.authorizeHttpRequests(authorizeHttpRequests ->
                 authorizeHttpRequests
-//                    .requestMatchers("/", "/error", "/users/signup", "/users/login", "/users/kakao/authorize", "/users/kakao/callback", "/emails/verify", "/emails/code-send","/users/check-nickname").permitAll()
-//                    .requestMatchers(HttpMethod.GET, "/admins/**").hasAuthority("ROLE_ADMIN")
-//                    .requestMatchers(HttpMethod.PATCH, "/admins/**").hasAuthority("ROLE_ADMIN")
-//                    .requestMatchers("/image/upload", "/image/delete", "/temp/**").permitAll()
-//                    .requestMatchers(HttpMethod.GET, "/movie/genres/api").permitAll()
-//                    .requestMatchers("/test/**").permitAll()
-//                    .requestMatchers(HttpMethod.GET, "/movies/**", "/reviews/**", "/boards/**", "/comments/**").permitAll()
-
-
-
                     .requestMatchers("/test/**").permitAll()
                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                     .requestMatchers("/emails/**").permitAll()

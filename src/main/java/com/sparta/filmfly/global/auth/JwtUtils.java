@@ -3,6 +3,7 @@ package com.sparta.filmfly.global.auth;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,7 @@ import java.util.Date;
 
 @Slf4j(topic = "JwtUtil")
 @Component
-public class JwtProvider {
+public class JwtUtils {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final long ACCESS_TOKEN_TIME = 30 * 60 * 1000L * 60 * 60;
@@ -72,8 +73,12 @@ public class JwtProvider {
     /**
      * JWT 토큰에서 사용자 정보 추출
      */
-    public Claims getUserInfoFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    public Optional<Claims> getClaimsFromToken(String token) {
+        if (!validateToken(token)) {
+            return Optional.empty();
+        }
+        Claims body = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        return Optional.of(body);
     }
 
     /**

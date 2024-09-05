@@ -9,7 +9,7 @@ import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
-import com.sparta.filmfly.global.auth.JwtProvider;
+import com.sparta.filmfly.global.auth.JwtUtils;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
@@ -37,7 +37,7 @@ public class KakaoService {
 
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
-    private final JwtProvider jwtProvider;
+    private final JwtUtils jwtUtils;
     private final ObjectMapper objectMapper;
 
     @Value("${kakao.client_id}")
@@ -162,8 +162,8 @@ public class KakaoService {
             isNewUser = true;
         }
 
-        String accessToken = jwtProvider.createAccessToken(user.getUsername());
-        String refreshToken = jwtProvider.createRefreshToken(user.getUsername());
+        String accessToken = jwtUtils.createAccessToken(user.getUsername());
+        String refreshToken = jwtUtils.createRefreshToken(user.getUsername());
 
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
