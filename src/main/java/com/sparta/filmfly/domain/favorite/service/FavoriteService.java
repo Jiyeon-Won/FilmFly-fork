@@ -47,9 +47,9 @@ public class FavoriteService {
     public PageResponseDto<List<MovieResponseDto>> getPageFavorite(Long userId,Pageable pageable) {
         Page<Favorite> favoriteList = favoriteRepository.findAllByUserId(userId,pageable);
         //movie 하나 하나 선택 마다 select 쿼리 날리주는 중  나중에 수정 필요
-        List<Movie> movieList = favoriteList.stream().map(
-                favorite -> movieRepository.findByIdOrElseThrow(favorite.getMovie().getId())
-        ).toList();
+        List<Movie> movieList = favoriteList.stream()
+            .map(favorite -> movieRepository.findByIdOrElseThrow(favorite.getMovie().getId()))
+            .toList();
         return PageResponseDto.<List<MovieResponseDto>>builder()
                 .totalElements(favoriteList.getTotalElements())
                 .totalPages(favoriteList.getTotalPages())

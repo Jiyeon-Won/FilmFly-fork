@@ -40,8 +40,7 @@ public class CouponController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CouponRequestDto requestDto
     ) {
-        List<CouponResponseDto> responseDto = couponService.createCoupon(userDetails.getUser(),
-                requestDto);
+        List<CouponResponseDto> responseDto = couponService.createCoupon(userDetails.getUser(), requestDto);
         return ResponseUtils.success(responseDto);
     }
 
@@ -104,6 +103,4 @@ public class CouponController {
         CouponResponseDto responseDto = couponService.distributeCoupons(userDetails.getUser(), description);
         return ResponseUtils.success(responseDto);
     }
-
-
 }

@@ -63,10 +63,8 @@ public class ReviewController {
         @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
         @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
-
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<ReviewResponseDto>> responseDto = reviewService
-            .getPageReview(userDetails, movieId, pageable);
+        PageResponseDto<List<ReviewResponseDto>> responseDto = reviewService.getPageReview(userDetails, movieId, pageable);
         return ResponseUtils.success(responseDto);
     }
 

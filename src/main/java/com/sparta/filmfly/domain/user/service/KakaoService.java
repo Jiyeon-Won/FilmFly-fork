@@ -9,12 +9,14 @@ import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
-import com.sparta.filmfly.global.util.JwtUtils;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
-import jakarta.servlet.http.Cookie;
+import com.sparta.filmfly.global.util.CookieUtils;
+import com.sparta.filmfly.global.util.JwtUtils;
 import jakarta.servlet.http.HttpServletResponse;
+import java.net.URI;
+import java.security.SecureRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,9 +28,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-import java.security.SecureRandom;
 
 @Slf4j(topic = "KAKAO Login")
 @Service
@@ -47,11 +46,9 @@ public class KakaoService {
     private String redirectUri;
 
     public UserResponseDto kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
-        String accessToken = getToken(code);
-        log.info("Kakao access token: {}", accessToken);
+        String accessToken = getKakaoAccessToken(code);
 
         UserKakaoInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
-        log.info("Kakao user info: {}", kakaoUserInfo);
 
         return createOrUpdateUser(kakaoUserInfo, response);
     }
@@ -59,8 +56,7 @@ public class KakaoService {
     /**
      * Access Token 획득
      */
-    private String getToken(String code) throws JsonProcessingException {
-        log.info("Kakao access code: {}", code);
+    private String getKakaoAccessToken(String code) throws JsonProcessingException {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://kauth.kakao.com")
                 .path("/oauth/token")
@@ -168,8 +164,10 @@ public class KakaoService {
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
 
-        addCookie(response, "accessToken", accessToken);
-        addCookie(response, "refreshToken", refreshToken);
+        CookieUtils.addCookie(response, "accessToken", accessToken.replace(" ", "+"), JwtUtils.ACCESS_TOKEN_TIME);
+        CookieUtils.addCookie(response, "accessToken", accessToken.replace(" ", "+"), JwtUtils.REFRESH_TOKEN_TIME);
+        log.info("카카오 로그인 access Token: {}", accessToken);
+        log.info("카카오 로그인 refresh Token: {}", refreshToken);
 
         if (isNewUser) {
             return UserResponseDto.builder()
@@ -186,15 +184,6 @@ public class KakaoService {
         }
 
         return null;
-    }
-
-    /**
-     * 쿠키 추가
-     */
-    private void addCookie(HttpServletResponse response, String name, String value) {
-        Cookie cookie = new Cookie(name, value.replace(" ", "+"));
-        cookie.setPath("/");
-        response.addCookie(cookie);
     }
 
     /**

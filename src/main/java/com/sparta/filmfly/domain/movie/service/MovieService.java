@@ -13,7 +13,6 @@ import com.sparta.filmfly.global.common.response.PageResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.common.util.JsonFormatter;
 import com.sparta.filmfly.global.exception.custom.detail.ApiRequestFailedException;
-import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,7 +78,6 @@ public class MovieService {
 
     @Transactional
     public List<ApiMovieResponseDto> apiRequestForMovie(Object apiDiscoverMovieRequestDto) {
-        log.info("apiRequestForMovie");
         String movieUrl = "";
         if (apiDiscoverMovieRequestDto instanceof ApiDiscoverMovieRequestDto) {
             movieUrl = "/3/discover/movie";
@@ -114,13 +112,11 @@ public class MovieService {
         }
 
         String url = builder.toUriString();
-        log.info(url);
         Request movieRequest = requestBuilder(url);
         try (Response response = httpClient.newCall(movieRequest).execute()) {
             if (!response.isSuccessful()) throw new ApiRequestFailedException(ResponseCodeEnum.API_REQUEST_FAILED);
             String body = response.body().string();
             String format = JsonFormatter.formatJson(body);
-            // log.info(format);
 
             // body 를 ApiMovieResponse 객체로 변환
             ApiMovieResponse apiMovieResponse = objectMapper.readValue(body, ApiMovieResponse.class);
@@ -134,13 +130,11 @@ public class MovieService {
             for (Movie movie : movieList) {
                 // 영화 배우 목록 API 호출
                 Request creditsRequest = requestBuilder(String.format("%s/3/movie/%d/credits", baseUrl, movie.getId()));
-                log.info("In 배우 데이터 크롤링");
                 Response creditsResponse = httpClient.newCall(creditsRequest).execute();
                 if (!creditsResponse.isSuccessful())
                     throw new ApiRequestFailedException(ResponseCodeEnum.API_REQUEST_FAILED);
                 // 배우 데이터 parsing
                 String credits = creditsResponse.body().string();
-                log.info(JsonFormatter.formatJson(credits));
                 ApiCreditsResponse apiCreditsResponse = objectMapper.readValue(credits, ApiCreditsResponse.class);
                 List<ApiCreditsResponseDto> apiCreditsResponseDtoList = apiCreditsResponse.getCast();
 
@@ -148,7 +142,6 @@ public class MovieService {
                 List<Credit> creditList = apiCreditsResponseDtoList.stream()
                         .map(ApiCreditsResponseDto::toEntity)
                         .collect(Collectors.toList());
-                log.info("배우 List 저장");
                 // Credit Entity 저장 : saveAll -> 이미 존재하는 데이터는 업데이트, 없으면 새로 생성
                 creditList = creditRepository.saveAll(creditList);
                 // 영화 list api 요청  가지고 옴
@@ -156,7 +149,6 @@ public class MovieService {
                 // 영화 1 -> 배우 4,6,8,3
                 // 영화 2 -> 배우 3,7,4,2,9
                 // MovieCredit 엔티티 생성 및 저장
-                log.info("배우-영화 연관관계 저장");
                 creditList.forEach(credit -> {
                     if (!movieCreditRepository.existsByMovieAndCredit(movie, credit)) {
                         movieCreditRepository.save(MovieCredit.builder()
@@ -165,44 +157,11 @@ public class MovieService {
                                 .build());
                     }
                 });
-
-//                        .map(credit -> {
-//                            Optional<MovieCredit> existingMovieCreditOpt = movieCreditRepository.findByMovieAndCredit(movie, credit);
-//                            return existingMovieCreditOpt.orElseGet(() -> MovieCredit.builder()
-//                                    .movie(movie)
-//                                    .credit(credit)
-//                                    .build());
-//                        })
-//                        .collect(Collectors.toList());
-//                movieCreditRepository.saveAll(movieCreditList);
-                log.info("Out 배우 데이터 크롤링");
-
-                // Movie 의 movieCredits 리스트 업데이트 ->  CascadeAll 처리
-//                movie.updateMovieCreditList(movieCreditList);
             }
             return apiMovieResponseDtoList;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private Request requestBuilder(String url) {
-        return new Builder()
-                .url(url)
-                .get()
-                .addHeader("accept", "application/json")
-                .addHeader("Authorization", TMDB_API_AUTHORIZATION)
-                .build();
-    }
-
-    //
-    public void creditSyncTest(Long creditId) {
-        Credit credit = creditRepository.findById(creditId).orElseThrow(
-                () -> new NotFoundException(ResponseCodeEnum.CREDIT_NOT_FOUND)
-        );
-        List<MovieCredit> movieCreditList = credit.getMovieCreditList();
-        List<MovieCredit> movieCreditList2 = movieCreditRepository.findByCredit(credit);
-        System.out.println(movieCreditList.size() + " & " + movieCreditList2.size());
     }
 
     /**
@@ -219,7 +178,7 @@ public class MovieService {
             // 장르 데이터 parsing
             assert genresResponse.body() != null;
             String genres = genresResponse.body().string();
-            log.info(JsonFormatter.formatJson(genres));
+
             ApiGenresResponse apiGenresResponse = objectMapper.readValue(genres, ApiGenresResponse.class);
             List<GenresResponseDto> genresResponseDtoList = apiGenresResponse.getGenres();
             List<Genre> genreList = genresResponseDtoList.stream()
@@ -232,14 +191,7 @@ public class MovieService {
         }
     }
 
-    /*
-     * 배우 검색
-     */
-//    public Page<Credit> getCreditList(String keyword, Pageable pageable) {
-//
-//    }
-
-    /*
+    /**
      * 영화 단건 조회
      */
     public MovieDetailSimpleResponseDto getMovie(UserDetailsImpl userDetails, Long movieId) {
@@ -256,21 +208,6 @@ public class MovieService {
         responseDto.updateAvgRating(avgRating);
 
         return responseDto;
-
-
-
-
-//        Movie movie = movieRepository.findByIdOrElseThrow(movieId);
-//        List<Credit> creditList = creditRepository.findByMovieId(movieId);
-//        Float avgRating = reviewRepository.getAverageRatingByMovieId(movieId);
-//
-//        return MovieDetailResponseDto.builder()
-//                .movie(MovieResponseDto.fromEntity(movie))
-//                .creditList(creditList.stream()
-//                        .map(CreditResponseDto::fromEntity)
-//                        .collect(Collectors.toList()))
-//                .avgRating(avgRating)
-//                .build();
     }
 
     /**
@@ -280,13 +217,21 @@ public class MovieService {
         return movieRepository.count();
     }
 
-
-    /*
+    /**
      * 영화 장르 조회
      */
     public List<GenresResponseDto> getGenres() {
         return genreRepository.findAll().stream()
                 .map(GenresResponseDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    private Request requestBuilder(String url) {
+        return new Builder()
+            .url(url)
+            .get()
+            .addHeader("accept", "application/json")
+            .addHeader("Authorization", TMDB_API_AUTHORIZATION)
+            .build();
     }
 }

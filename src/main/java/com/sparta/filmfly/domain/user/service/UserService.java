@@ -1,20 +1,11 @@
 package com.sparta.filmfly.domain.user.service;
 
-import com.sparta.filmfly.domain.board.repository.BoardRepository;
-import com.sparta.filmfly.domain.collection.repository.CollectionRepository;
-import com.sparta.filmfly.domain.comment.repository.CommentRepository;
-import com.sparta.filmfly.domain.favorite.repository.FavoriteRepository;
-import com.sparta.filmfly.domain.reaction.repository.BadRepository;
-import com.sparta.filmfly.domain.reaction.repository.GoodRepository;
 import com.sparta.filmfly.domain.user.dto.UserDeleteRequestDto;
-import com.sparta.filmfly.domain.user.dto.UserOwnerCheckRequestDto;
-import com.sparta.filmfly.domain.user.dto.UserOwnerCheckResponseDto;
 import com.sparta.filmfly.domain.user.dto.UserPasswordUpdateRequestDto;
 import com.sparta.filmfly.domain.user.dto.UserProfileUpdateRequestDto;
 import com.sparta.filmfly.domain.user.dto.UserResponseDto;
 import com.sparta.filmfly.domain.user.dto.UserSearchPageResponseDto;
 import com.sparta.filmfly.domain.user.dto.UserSignupRequestDto;
-import com.sparta.filmfly.domain.user.entity.ContentTypeEnum;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
@@ -26,8 +17,6 @@ import com.sparta.filmfly.global.exception.custom.detail.InformationMismatchExce
 import com.sparta.filmfly.global.exception.custom.detail.InvalidTargetException;
 import com.sparta.filmfly.global.exception.custom.detail.UploadException;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +40,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
     private final S3Uploader s3Uploader;
-    private final ApplicationContext applicationContext;
 
     @Value("${admin_password}")
     private String managerPassword;
@@ -124,8 +112,7 @@ public class UserService {
      * 프로필 업데이트
      */
     @Transactional
-    public UserResponseDto updateProfile(User user, UserProfileUpdateRequestDto requestDto,
-            MultipartFile profilePicture) {
+    public UserResponseDto updateProfile(User user, UserProfileUpdateRequestDto requestDto, MultipartFile profilePicture) {
         // 닉네임 중복 확인
         if (!user.getNickname().equals(requestDto.getNickname())) {
             checkNicknameDuplication(requestDto.getNickname());
@@ -138,10 +125,8 @@ public class UserService {
                 if (!s3Uploader.isFileSame(profilePicture, pictureUrl)) {
                     if (pictureUrl != null && !pictureUrl.isEmpty()) {
                         s3Uploader.delete(pictureUrl); // 기존 프로필 사진 삭제
-                        log.info("Old profile picture deleted: {}", pictureUrl);
                     }
                     pictureUrl = s3Uploader.upload(profilePicture, "profile-pictures");
-                    log.info("New profile picture uploaded: {}", pictureUrl);
                 }
             } catch (IOException e) {
                 throw new UploadException(ResponseCodeEnum.UPLOAD_FAILED);
@@ -242,8 +227,9 @@ public class UserService {
      * 유저 검색 조회(관리자 기능)
      */
     @Transactional(readOnly = true)
-    public UserSearchPageResponseDto getUsersBySearch(String search, UserStatusEnum status,
-            int page, int size) {
+    public UserSearchPageResponseDto getUsersBySearch(
+        String search, UserStatusEnum status, int page, int size
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<User> usersPage;
 
@@ -320,77 +306,6 @@ public class UserService {
     }
 
     /**
-     * 요청 데이터가 본인 데이터인지 응답
-     */
-    @Transactional(readOnly = true)
-    public List<UserOwnerCheckResponseDto> checkOwner(User loginUser,
-            UserOwnerCheckRequestDto requestDto) {
-        List<UserOwnerCheckResponseDto> responseDtos = new ArrayList<>();
-        ContentTypeEnum contentType = ContentTypeEnum.valueOf(
-                requestDto.getContentType().toUpperCase());
-
-        for (Long contentId : requestDto.getContentIds()) {
-            boolean isOwner;
-
-            if (contentType == ContentTypeEnum.USER) {
-                isOwner = loginUser.getId().equals(contentId);
-            } else {
-                isOwner = checkExistAndOwnership(contentType, loginUser.getId(), contentId);
-            }
-
-            UserOwnerCheckResponseDto responseDto = UserOwnerCheckResponseDto.builder()
-                    .contentType(requestDto.getContentType())
-                    .contentId(contentId)
-                    .isOwner(isOwner)
-                    .build();
-
-            responseDtos.add(responseDto);
-        }
-
-        return responseDtos;
-    }
-
-    /**
-     * 주어진 콘텐츠 타입과 아이디를 기반으로 데이터 확인
-     */
-    private boolean checkExistAndOwnership(ContentTypeEnum contentType, Long userId,
-            Long contentId) {
-        Object repository = applicationContext.getBean(contentType.getRepositoryClass());
-        boolean existsAndOwned;
-
-        switch (contentType) {
-            case BOARD:
-                existsAndOwned = ((BoardRepository) repository).existsByIdAndUserId(contentId,
-                        userId);
-                break;
-            case BAD:
-                existsAndOwned = ((BadRepository) repository).existsByIdAndUserId(contentId,
-                        userId);
-                break;
-            case GOOD:
-                existsAndOwned = ((GoodRepository) repository).existsByIdAndUserId(contentId,
-                        userId);
-                break;
-            case COMMENT:
-                existsAndOwned = ((CommentRepository) repository).existsByIdAndUserId(contentId,
-                        userId);
-                break;
-            case FAVORITE:
-                existsAndOwned = ((FavoriteRepository) repository).existsByIdAndUserId(contentId,
-                        userId);
-                break;
-            case COLLECTION:
-                existsAndOwned = ((CollectionRepository) repository).existsByIdAndUserId(contentId,
-                        userId);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown content type: " + contentType);
-        }
-
-        return existsAndOwned;
-    }
-
-    /**
      * 마이페이지 front 연동 위한 Service
      */
     @Transactional(readOnly = true)
@@ -409,5 +324,4 @@ public class UserService {
     public long getUserCount() {
         return userRepository.count();
     }
-
 }

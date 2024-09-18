@@ -30,14 +30,12 @@ public class ReviewService {
     private final MovieRepository movieRepository;
     private final GoodRepository goodRepository;
     private final BadRepository badRepository;
-    private final BlockRepository blockRepository;
 
     /**
      * 리뷰 저장
      */
     @Transactional
     public ReviewResponseDto createReview(User loginUser, Long movieId, ReviewCreateRequestDto requestDto) {
-        log.info("requestDto: {}", requestDto);
         Movie findMovie = movieRepository.findByIdOrElseThrow(movieId);
 
         Review review = requestDto.toEntity(loginUser, findMovie);
@@ -124,7 +122,6 @@ public class ReviewService {
      */
     @Transactional
     public ReviewUpdateResponseDto updateReview(User loginUser, ReviewUpdateRequestDto requestDto, Long reviewId) {
-        log.info("requestDto: {}", requestDto);
         Review findReview = reviewRepository.findByIdOrElseThrow(reviewId);
 
         // 수정하려는 리뷰가 자기가 작성한 리뷰인지 확인

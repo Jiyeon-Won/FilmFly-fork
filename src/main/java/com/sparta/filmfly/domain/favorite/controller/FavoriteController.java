@@ -34,7 +34,6 @@ public class FavoriteController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long movieId
     ) {
-        log.info("create favorite");
         FavoriteResponseDto responseDto = favoriteService.createFavorite(userDetails.getUser(), movieId);
         return ResponseUtils.success(responseDto);
     }
@@ -62,7 +61,6 @@ public class FavoriteController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long movieId
     ) {
-        log.info("delete favorite");
         favoriteService.deleteFavorite(userDetails.getUser(), movieId);
         return ResponseUtils.success();
     }

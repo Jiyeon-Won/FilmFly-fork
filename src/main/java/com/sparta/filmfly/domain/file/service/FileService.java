@@ -54,7 +54,6 @@ public class FileService {
      * localhost temp image 글자 있으면 s3에 업로드 후 temp 이미지 삭제 local 주소를 s3 주소로 변경된 값을 반환
      */
     public String uploadLocalImageToS3(MediaTypeEnum mediaType, Long boardId, String content) {
-        log.info("파일 변환");
         content = FileUtils.decodeUrlsInContent(content);   // src= 찾기
         Matcher matcher = pattern.matcher(content);
         while (matcher.find()) {
@@ -73,7 +72,6 @@ public class FileService {
 
                     //temp 폴더에 있는 경우
                     if (!multipartFile.isEmpty()) {
-                        log.info("변환 후 저장");
                         // s3에 저장 및 media 테이블에 저장
                         MediaResponseDto mediaResponseDto = mediaService.createMedia(mediaType, boardId, multipartFile);
                         // local 임시 이미지 삭제
@@ -130,10 +128,7 @@ public class FileService {
             //사라진 이미지면, content에 존재하지 않던 s3면 삭제
             if (!mediaExists.get(i)) {
                 Media media = mediaList.get(i);
-                log.info("S3 파일 제거 대상 : {}", media.getS3Url());
                 mediaService.deleteMediaAndS3(media);
-            } else {
-                log.info("S3 파일 유지 대상 : {}", mediaList.get(i).getS3Url());
             }
         }
     }

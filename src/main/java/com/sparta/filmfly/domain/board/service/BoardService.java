@@ -42,7 +42,7 @@ public class BoardService {
 
         //이미지 올릴때 검사, 이미지 전부 합쳐서 20MB 못넘게 하기 필요할까??
         String content = requestDto.getContent();
-        String modifiedContent = fileService.uploadLocalImageToS3(MediaTypeEnum.BOARD,savedBoard.getId(), content);
+        String modifiedContent = fileService.uploadLocalImageToS3(MediaTypeEnum.BOARD, savedBoard.getId(), content);
 
         savedBoard.updateContent(null, modifiedContent);
         Board updatedBoard = boardRepository.save(savedBoard);
@@ -70,15 +70,6 @@ public class BoardService {
         }
 
         return BoardReactionResponseDto.of(board, reactions, isOwner);
-
-//        Board board = boardRepository.findByIdOrElseThrow(boardId);
-//
-//        board.addHits();
-//        Board savedBoard = boardRepository.save(board);
-//
-//        Long goodCount = goodService.getCountByTypeTypeId(ReactionContentTypeEnum.BOARD,boardId);
-//        Long badCount = badService.getCountByTypeTypeId(ReactionContentTypeEnum.BOARD,boardId);
-//        return BoardResponseDto.fromEntity(savedBoard, goodCount, badCount);
     }
 
     /**

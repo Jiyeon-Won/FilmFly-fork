@@ -118,7 +118,7 @@ public class CollectionService {
     public Boolean getCollectionIdUpdatePermission(User user, Long collectionId) {
         Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
         collection.validateOwner(user);
-        return true; //수정 권한 없으면 에러?
+        return true;
     }
 
     /**

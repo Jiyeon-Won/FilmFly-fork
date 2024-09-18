@@ -108,6 +108,4 @@ public class EmailVerificationService {
     private String generateVerificationCode() {
         return UUID.randomUUID().toString().substring(0, 6);
     }
-
-
 }

@@ -42,8 +42,6 @@ public class MovieController {
     public ResponseEntity<DataResponseDto<List<ApiMovieResponseDto>>> apiDiscoverMovieRequest(
             @RequestBody ApiDiscoverMovieRequestDto apiDiscoverMovieRequestDto
     ) {
-        // 영화 검색
-        log.info("In discoverMovieList");
         List<ApiMovieResponseDto> responseDto = movieService.apiRequestForMovie(apiDiscoverMovieRequestDto);
         return ResponseUtils.success(responseDto);
     }
@@ -56,8 +54,6 @@ public class MovieController {
     public ResponseEntity<DataResponseDto<List<ApiMovieResponseDto>>> apiSearchMovieRequest(
             @RequestBody ApiSearchMovieRequestDto apiSearchMovieRequestDto
     ) {
-        // 영화 검색
-        log.info("In searchMovieList");
         List<ApiMovieResponseDto> responseDto = movieService.apiRequestForMovie(apiSearchMovieRequestDto);
         return ResponseUtils.success(responseDto);
     }
@@ -68,7 +64,6 @@ public class MovieController {
     @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
     @GetMapping("/genres/api")
     public ResponseEntity<MessageResponseDto> apiGenresRequest() {
-        log.info("In apiGenresRequest");
         movieService.apiGenresRequest(OriginLanguageEnum.EN);
         movieService.apiGenresRequest(OriginLanguageEnum.KO);
         return ResponseUtils.success();
@@ -79,7 +74,6 @@ public class MovieController {
      */
     @GetMapping("/genres")
     public ResponseEntity<DataResponseDto<List<GenresResponseDto>>> getGenres() {
-        log.info("In getGenres");
         List<GenresResponseDto> genresResponseDtoList = movieService.getGenres();
         return ResponseUtils.success(genresResponseDtoList);
     }
@@ -99,8 +93,6 @@ public class MovieController {
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate releaseDateFrom,
         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate releaseDateTo
     ) {
-        log.info("In getListMovie");
-
         MovieSearchCond movieSearchCond = MovieSearchCond.createSearchCondition(
             search, genreIds, adults, releaseDateFrom, releaseDateTo
         );
@@ -122,9 +114,7 @@ public class MovieController {
         @RequestParam(defaultValue = "10") int size,
         @RequestParam(defaultValue = "id") String sortBy,
         @RequestParam(defaultValue = "true") boolean isAsc
-//        @RequestParam
     ) {
-            log.info("In getTrendMovie");
             Sort sort = isAsc ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
             Pageable pageable = PageRequest.of(page-1, size, sort);
             Page<Movie> moviePage = movieService.getMovieTrendList(pageable);
@@ -154,7 +144,6 @@ public class MovieController {
         @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long movieId
     ) {
-        log.info("In getMovie");
         MovieDetailSimpleResponseDto responseDto = movieService.getMovie(userDetails, movieId);
         return ResponseUtils.success(responseDto);
     }
