@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<MessageResponseDto> handleIllegalArgumentException(IllegalArgumentException e) {
+    public ResponseEntity<MessageResponseDto> handleException(Exception e) {
         log.error("서버 에러: ", e);
         return ResponseUtils.of(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
     }

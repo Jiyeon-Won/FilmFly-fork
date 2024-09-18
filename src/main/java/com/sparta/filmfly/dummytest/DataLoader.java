@@ -45,6 +45,7 @@ public class DataLoader implements CommandLineRunner {
 //                e.printStackTrace();
 //            }
 //        }
+//        System.out.println("배치 종료");
     }
 
     private void executeSqlScript(String filePath) throws Exception {

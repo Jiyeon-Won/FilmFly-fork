@@ -1,6 +1,6 @@
 package com.sparta.filmfly.domain.file.service;
 
-import com.sparta.filmfly.domain.file.util.FileUtils;
+import com.sparta.filmfly.global.util.FileUtils;
 import com.sparta.filmfly.domain.media.dto.MediaResponseDto;
 import com.sparta.filmfly.domain.media.entity.Media;
 import com.sparta.filmfly.domain.media.entity.MediaTypeEnum;
@@ -33,7 +33,7 @@ public class FileService {
 
     public String saveFileToLocal(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
-        String folderLocation = FileUtils.getAbsoluteUploadFolder();
+        String folderLocation = FileUtils.getAbsoluteUploadFolder(FileUtils.uploadLocation);
         String uuidFileName = FileUtils.createUuidFileName(originalFilename);
         String fileFullPath = folderLocation + uuidFileName;
         File saveFile = new File(fileFullPath);
@@ -66,7 +66,7 @@ public class FileService {
             //img의 src 값의 앞 부분이 임시 이미지면 http://localhost:8080/temp ?
             if (src.split("://")[1].startsWith(currentUrl + "/temp/")) {
                 try {
-                    String filePath = FileUtils.getAbsoluteUploadFolder() + srcFileName;
+                    String filePath = FileUtils.getAbsoluteUploadFolder(FileUtils.uploadLocation) + srcFileName;
 
                     File file = new File(filePath); //temp 폴더의 임시 이미지 지정
                     MultipartFile multipartFile = FileUtils.convertFileToMultipartFile(file);

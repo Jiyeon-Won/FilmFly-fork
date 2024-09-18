@@ -1,7 +1,9 @@
-package com.sparta.filmfly.domain.file.util;
+package com.sparta.filmfly.global.util;
 
+import com.sparta.filmfly.domain.file.util.CustomMultipartFile;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -12,24 +14,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-public class FileUtils {
+public abstract class FileUtils {
 
-    private static final String uploadLocation = "/src/main/resources/static/temp/";
+    public static final String uploadLocation = "/src/main/resources/static/temp/";
+    public static final String sqlLocation = "/src/main/resources/dummy/";
 
     /**
      * 임시 저장된 이미지 폴더 경로
      */
-    public static String getAbsoluteUploadFolder() {
+    public static String getAbsoluteUploadFolder(String location) {
         try {
             File file = new File("");
-            String currentAbsolutePath = file.getAbsolutePath() + uploadLocation;
+            String currentAbsolutePath = file.getAbsolutePath() + location;
             Path path = Paths.get(currentAbsolutePath);
             if (!Files.exists(path)) {
                 Files.createDirectories(path);
@@ -94,7 +96,7 @@ public class FileUtils {
      * local 파일 삭제
      */
     public static void deleteFileToLocal(String imageName) {
-        Path path = Paths.get(getAbsoluteUploadFolder(), imageName);
+        Path path = Paths.get(getAbsoluteUploadFolder(uploadLocation), imageName);
         try {
             // 파일 삭제
             Files.delete(path);
@@ -124,5 +126,21 @@ public class FileUtils {
         }
         matcher.appendTail(decodedContent);
         return decodedContent.toString();
+    }
+
+    /**
+     * SQL 데이터를 파일로 저장하는 메서드
+     * @param fileName 저장할 파일 이름
+     * @param data 저장할 SQL 데이터
+     */
+    public static void saveSqlToFile(String fileName, String data) {
+        String uploadFolder = getAbsoluteUploadFolder(sqlLocation);
+        Path filePath = Paths.get(uploadFolder, fileName);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toFile()))) {
+            writer.write(data);
+        } catch (IOException e) {
+            log.error("SQL 파일 저장 중 오류가 발생했습니다: {}", e.getMessage());
+            throw new RuntimeException("SQL 파일 저장 중 오류가 발생했습니다.", e);
+        }
     }
 }

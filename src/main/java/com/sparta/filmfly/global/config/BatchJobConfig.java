@@ -57,7 +57,6 @@ public class BatchJobConfig {
     public Job hardDeleteJob(Step userHardDeleteStep,
                              Step blockHardDeleteStep,
                              Step reportHardDeleteStep,
-                             Step officeBoardHardDeleteStep,
                              Step boardHardDeleteStep,
                              Step commentHardDeleteStep,
                              Step collectionHardDeleteStep,
@@ -70,7 +69,6 @@ public class BatchJobConfig {
                 .start(userHardDeleteStep)
                 .next(blockHardDeleteStep)
                 .next(reportHardDeleteStep)
-                .next(officeBoardHardDeleteStep)
                 .next(boardHardDeleteStep)
                 .next(commentHardDeleteStep)
                 .next(collectionHardDeleteStep)
@@ -97,13 +95,6 @@ public class BatchJobConfig {
     public Step reportHardDeleteStep(Tasklet reportHardDeleteTasklet, PlatformTransactionManager transactionManager) {
         return new StepBuilder("reportHardDeleteStep", jobRepository)
                 .tasklet(reportHardDeleteTasklet, transactionManager)
-                .build();
-    }
-
-    @Bean
-    public Step officeBoardHardDeleteStep(Tasklet officeBoardHardDeleteTasklet, PlatformTransactionManager transactionManager) {
-        return new StepBuilder("officeBoardHardDeleteStep", jobRepository)
-                .tasklet(officeBoardHardDeleteTasklet, transactionManager)
                 .build();
     }
 

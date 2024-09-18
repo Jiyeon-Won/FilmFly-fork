@@ -105,11 +105,7 @@ public class S3Uploader {
         StringBuilder sb = new StringBuilder();
         if(mediaType == MediaTypeEnum.BOARD) { //FileService.checkModifiedImageFile에 있는거랑 비슷함
             sb.append("boards/");
-        }
-        else if(mediaType == MediaTypeEnum.OFFICE_BOARD) {
-            sb.append("officeBoards/");
-        }
-        else {
+        } else {
             sb.append("etc/");
         }
         return sb.append(typeId).append("/").append(fileName).toString();

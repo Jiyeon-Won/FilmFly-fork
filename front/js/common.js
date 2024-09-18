@@ -1,41 +1,33 @@
 $(function () {
     // 헤더 삽입
     $('#common-header').load('../common/common-header.html', function () {
-        console.log('Header loaded.');
-
-
-        function checkLoginStatusWithoutCookie() {
-            let status = false;
-            apiModule.GET("/users/myInfo",
-                function (response) {
-                    console.log("유저 정보 호출 Success");
-                    $('#loginLink').hide();
-                    $('#signupLink').hide();
-                    $('#logoutLink').show();
-                    $('#myPageLink').show();
-                }, function () {
-                    console.log("유저 정보 호출 Failed");
-                    $('#loginLink').show();
-                    $('#signupLink').show();
-                    $('#logoutLink').hide();
-                    $('#myPageLink').hide();
-                });
-            console.log('status: ' + status);
-        }
-
-        checkLoginStatusWithoutCookie();
-
+        // function checkLoginStatusWithoutCookie() {
+        //     let status = false;
+        //     apiModule.GET("/users/myInfo",
+        //         function (response) {
+        //             console.log("유저 정보 호출 Success");
+        //             $('#loginLink').hide();
+        //             $('#signupLink').hide();
+        //             $('#logoutLink').show();
+        //             $('#myPageLink').show();
+        //         }, function () {
+        //             console.log("유저 정보 호출 Failed");
+        //             $('#loginLink').show();
+        //             $('#signupLink').show();
+        //             $('#logoutLink').hide();
+        //             $('#myPageLink').hide();
+        //         });
+        //     console.log('status: ' + status);
+        // }
+        //
+        // checkLoginStatusWithoutCookie();
 
         // 쿠키에서 accessToken 가져오기 함수
         function getCookie(name) {
-            console.log(document.cookie);
             const value = `; ${document.cookie}`;
-            console.log(value);
             const parts = value.split(`; ${name}=`);
-            console.log(parts);
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
-
 
         // 로그인 상태 확인 함수
         function checkLoginStatus() {
@@ -87,19 +79,19 @@ $(function () {
         }
 
         // 초기 상태 설정
-        // updateAuthLinks();
+        updateAuthLinks();
 
         // 로그아웃 버튼 클릭 이벤트
         $('#logoutBtn').on('click', function (event) {
             event.preventDefault();
             if (confirm('로그아웃 하시겠습니까?')) {
-                apiModule.POST('/users/logout', {},
+                apiModule.POST('/users/logout', null,
                     function (result) {
                         alert('로그아웃 되었습니다.');
                         localStorage.setItem('isLoggedIn', 'false'); // 로그인 상태 업데이트
                         localStorage.removeItem('userRole'); // 사용자 역할 정보 제거
                         localStorage.removeItem('loginTime'); // 로그인 시간 제거
-                        // updateAuthLinks();
+                        updateAuthLinks();
                         // location.href = '../html/index.html';
                         location.reload();
                     },
