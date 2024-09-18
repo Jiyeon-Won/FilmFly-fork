@@ -71,7 +71,8 @@ admin_password: ${ADMIN_PASSWORD}
 
 kakao:
   client_id: ${KAKAO_CLIENT_ID}
-  redirect_uri: ${KAKAO_REDIRECT_URI}
+  redirect_uri: http://localhost:63342/film-fly/front/html/login.html
+#  redirect_uri: https://www.filmfly.life/html/login.html
 
 cloud:
   aws:

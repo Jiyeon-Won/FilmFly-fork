@@ -154,8 +154,10 @@
         });
 
         function kakaoCheck() {
+            console.log("카카오 체크");
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
+            console.log(`code 있음 : ${code}`);
             if (code) {
                 apiModule.GET(`/users/kakao/callback?code=${code}`,
                     function (response) {
@@ -171,8 +173,11 @@
 
         // 카카오 로그인 버튼 클릭 이벤트 리스너
         $('.kakao-login-btn').on('click', function () {
-            console.log('카카오 로그인 버튼');
-            window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=389af57526eb713741c267b7af4db95a&redirect_uri=https://www.filmfly.life/html/login.html&response_type=code`;
+            const clientId = 'e21edfa48291171ae426db6063961ad2';
+            // const redirectUri = 'https://www.filmfly.life/html/login.html';
+            const redirectUri = 'http://localhost:63342/film-fly/front/html/login.html';
+            // const redirectUri = 'http://localhost:8080/front/login.html';
+            window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
         });
     });
 </script>
