@@ -67,9 +67,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     //API 요청
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
-
-    // Memcached
-    implementation 'net.spy:spymemcached:2.12.3'
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {

@@ -16,13 +16,13 @@ import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
 import com.sparta.filmfly.global.exception.custom.detail.InformationMismatchException;
 import com.sparta.filmfly.global.exception.custom.detail.InvalidTargetException;
 import com.sparta.filmfly.global.exception.custom.detail.UploadException;
+import com.sparta.filmfly.global.infra.RedisService;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class UserService {
 
+    private final RedisService redisService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
@@ -82,6 +83,9 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+
+        redisService.delete(user.getEmail() + ":sendCount");
+        redisService.delete(user.getEmail() + ":verified");
 
         return UserResponseDto.builder()
                 .id(user.getId())

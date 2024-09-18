@@ -5,13 +5,13 @@ import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
 import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
 import com.sparta.filmfly.global.exception.custom.detail.LimitedException;
+import com.sparta.filmfly.global.infra.RedisService;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.spy.memcached.MemcachedClient;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -20,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 public class EmailVerificationService {
 
-    private final MemcachedClient memcachedClient;
+    private final RedisService redisService;
     private final JavaMailSender mailSender;
     private final UserRepository userRepository;
 
@@ -31,7 +31,6 @@ public class EmailVerificationService {
     /**
      * 이메일 인증 코드를 전송
      */
-    @Transactional
     public void sendVerificationEmail(String email) {
         // 이메일 존재 여부 확인
         if (userRepository.existsByEmail(email)) {
@@ -40,8 +39,7 @@ public class EmailVerificationService {
 
         // 전송 횟수 확인
         String sendCountKey = email + ":sendCount";
-        Integer sendCount = (Integer) memcachedClient.get(sendCountKey);
-        log.info("sendCount:"+sendCount);
+        Integer sendCount = redisService.get(sendCountKey, Integer.class);
         if (sendCount == null) {
             sendCount = 0;
         }
@@ -54,18 +52,18 @@ public class EmailVerificationService {
         String verificationCode = generateVerificationCode();
 
         // Memcached에 인증 코드 저장 (3분간 유효)
-        memcachedClient.set(email, (int) EXPIRATION_TIME, verificationCode);
+        redisService.set(email, verificationCode, EXPIRATION_TIME, TimeUnit.SECONDS);
 
         // 전송 횟수 증가 및 갱신
-        sendCount++;
-        memcachedClient.set(sendCountKey, (int) SEND_LIMIT_RESET_TIME, sendCount);
+        ++sendCount;
+        redisService.set(sendCountKey, sendCount, SEND_LIMIT_RESET_TIME, TimeUnit.SECONDS);
 
         // 이메일 발송
         sendEmail(email, "이메일 인증 코드는 다음과 같습니다: " + verificationCode);
 
         // 인증 상태 초기화 (아직 인증되지 않음)
         String verificationStatusKey = email + ":verified";
-        memcachedClient.set(verificationStatusKey, (int) EXPIRATION_TIME, false);
+        redisService.set(verificationStatusKey, false, 10, TimeUnit.MINUTES);
     }
 
     private void sendEmail(String to, String text) {
@@ -77,11 +75,10 @@ public class EmailVerificationService {
         mailSender.send(message);
     }
 
-    @Transactional
     public void verifyEmailCode(String email, String code) {
-        String storedCode = (String) memcachedClient.get(email);
+        String storedCode = redisService.get(email, String.class);
 
-        if (storedCode == null) {
+        if (storedCode == null || storedCode.isBlank()) {
             throw new AccessDeniedException(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
         }
 
@@ -89,16 +86,15 @@ public class EmailVerificationService {
             throw new AccessDeniedException(ResponseCodeEnum.EMAIL_VERIFICATION_TOKEN_MISMATCH);
         }
 
-        // 인증 성공 후, Memcached에서 코드 삭제 및 인증 상태 업데이트
-        memcachedClient.delete(email);
+        // 인증 성공 후, 인증코드 삭제 및 인증 상태 업데이트
+        redisService.delete(email);
         String verificationStatusKey = email + ":verified";
-        memcachedClient.set(verificationStatusKey, (int) EXPIRATION_TIME, true);
+        redisService.set(verificationStatusKey, true, 5, TimeUnit.MINUTES);
     }
 
-    @Transactional
     public void checkIfEmailVerified(String email) {
         String verificationStatusKey = email + ":verified";
-        Boolean isVerified = (Boolean) memcachedClient.get(verificationStatusKey);
+        Boolean isVerified = redisService.get(verificationStatusKey, Boolean.class);
 
         if (isVerified == null || !isVerified) {
             throw new AccessDeniedException(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);

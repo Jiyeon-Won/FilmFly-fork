@@ -84,6 +84,6 @@ cloud:
     s3:
       bucket: filmfly-backend
 
-memcached:
-  host: ${MEMCACHED_HOST}
-  port: ${MEMCACHED_PORT:11211}
+redis:
+  host: ${REDIS_HOST}
+  port: ${REDIS_PORT}

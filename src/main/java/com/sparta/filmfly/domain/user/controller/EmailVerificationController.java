@@ -8,13 +8,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/emails")
 @RequiredArgsConstructor
-@Slf4j
 public class EmailVerificationController {
 
     private final EmailVerificationService emailVerificationService;
@@ -24,7 +26,6 @@ public class EmailVerificationController {
      */
     @PostMapping("/code-send")
     public ResponseEntity<MessageResponseDto> sendVerificationCode(@Valid @RequestBody EmailVerificationRequestDto requestDto) {
-        log.info("In sendVerificationCode");
         emailVerificationService.sendVerificationEmail(requestDto.getEmail());
         return ResponseUtils.success();
     }
@@ -35,7 +36,6 @@ public class EmailVerificationController {
     @PostMapping("/verify")
 
     public ResponseEntity<MessageResponseDto> verifyCode(@Valid @RequestBody EmailVerificationRequestDto requestDto) {
-        log.info("In verifyCode");
         emailVerificationService.verifyEmailCode(requestDto.getEmail(), requestDto.getCode());
         return ResponseUtils.success();
     }
