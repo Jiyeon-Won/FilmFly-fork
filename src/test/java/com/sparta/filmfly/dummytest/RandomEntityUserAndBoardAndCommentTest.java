@@ -1,5 +1,10 @@
 package com.sparta.filmfly.dummytest;
 
+import com.sparta.filmfly.global.util.FileUtils;
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -11,45 +16,23 @@ class RandomEntityUserAndBoardAndCommentTest {
             "원지연", "백원하", "이은규", "한호진", "강준모"
     };
     private static final String FIXED_PASSWORD = "$2a$12$rQpJST/20h27oYcjOZ20XOqusfj5O.x2u9W1nnZ9RYdZWYU3IQwxu";
-    public static final int NUMBER_OF_USER_RECORDS = 50; // 생성할 유저 레코드 수
-    public static final int NUMBER_OF_BOARD_RECORDS = 600; // 생성할 보드 레코드 수
-    public static final int NUMBER_OF_COMMENT_RECORDS = 2000; // 생성할 댓글 레코드 수
-    public static final int DAYS_BEFORE = 30; // 기준 날짜로부터 몇 일 전
+    public static final int NUMBER_OF_USER_RECORDS = 505; // 생성할 유저 레코드 수
+    public static final int NUMBER_OF_BOARD_RECORDS = 20000; // 생성할 보드 레코드 수
+    public static final int NUMBER_OF_COMMENT_RECORDS = 100000; // 생성할 댓글 레코드 수
+    public static final int DAYS_BEFORE = 365; // 기준 날짜로부터 몇 일 전
 
     @Test
     public void testDataGeneration() {
         Random random = new Random();
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startDate = now.minusDays(DAYS_BEFORE); // 오늘 날짜 기준 DAYS_BEFORE 일 전
-        long secondsBetween = ChronoUnit.SECONDS.between(startDate, now);
+        long secondsBetween = ChronoUnit.SECONDS.between(startDate, now); // startDate와 now 사이의 초 차이
 
         // 유저 데이터 생성
         Set<String> usedNicknames = new HashSet<>();
         StringBuilder userSb = new StringBuilder();
-        LocalDateTime[] userCreationDates = new LocalDateTime[NUMBER_OF_USER_RECORDS];
 
-        LocalDateTime previousUserDate = startDate;
         for (int i = 1; i <= NUMBER_OF_USER_RECORDS; i++) {
-            long randomSeconds = random.nextInt((int) secondsBetween + 1);
-            LocalDateTime userCreationDate = startDate.plusSeconds(randomSeconds);
-
-            int randomHour = random.nextInt(24);
-            int randomMinute = random.nextInt(60);
-            int randomSecond = random.nextInt(60);
-            userCreationDate = userCreationDate.withHour(randomHour)
-                    .withMinute(randomMinute)
-                    .withSecond(randomSecond);
-
-            int randomMillis = random.nextInt(1000);
-            int randomNanos = random.nextInt(1_000_000_000);
-            userCreationDate = userCreationDate.plusNanos(randomMillis * 1_000_000 + randomNanos);
-
-            if (userCreationDate.isBefore(previousUserDate)) {
-                userCreationDate = previousUserDate.plusSeconds(1);
-            }
-
-            previousUserDate = userCreationDate;
-
             String nickname;
             String username;
             String role;
@@ -61,168 +44,180 @@ class RandomEntityUserAndBoardAndCommentTest {
             } else {
                 username = "username" + (i - 5);
                 nickname = (i <= FIXED_NICKNAMES.length)
-                        ? FIXED_NICKNAMES[i - 1]
-                        : generateUniqueKoreanName(random, usedNicknames);
+                    ? FIXED_NICKNAMES[i - 1]
+                    : generateUniqueKoreanName(random, usedNicknames);
                 role = "ROLE_USER";
             }
             usedNicknames.add(nickname);
 
-            String formattedDateTime = userCreationDate.toString().replace("T", " ");
+            String formattedDateTime = now.minusDays(DAYS_BEFORE + 1).toString().replace("T", " ");
             userSb.append(String.format(
-                    "('%s', '%s', 'user%d@example.com', '%s', NULL, NULL, 'ACTIVE', '%s', '%s', '%s')",
-                    username, FIXED_PASSWORD, i, nickname, role, formattedDateTime, formattedDateTime
+                "('%s', '%s', 'user%d@example.com', '%s', NULL, NULL, 'ACTIVE', '%s', '%s', '%s')",
+                username, FIXED_PASSWORD, i, nickname, role, formattedDateTime, formattedDateTime
             ));
 
             if (i < NUMBER_OF_USER_RECORDS) {
                 userSb.append(",\n");
             }
-
-            userCreationDates[i - 1] = userCreationDate;
         }
 
         // 보드 데이터 생성
         List<BoardData> boardDataList = new ArrayList<>();
+        Map<Long, Set<String>> userBoardTitles = new HashMap<>(); // 사용자별로 게시글 제목을 저장할 Map
 
         for (int i = 1; i <= NUMBER_OF_BOARD_RECORDS; i++) {
-            // 랜덤 유저 선택
             int userIndex = random.nextInt(NUMBER_OF_USER_RECORDS);
-            LocalDateTime userCreationDate = userCreationDates[userIndex];
-
-            // 보드 생성일자를 유저 생성일자보다 하루 뒤로 설정
-            LocalDateTime boardCreationDate = userCreationDate.plusDays(1);
-
-            int randomHour = random.nextInt(24);
-            int randomMinute = random.nextInt(60);
-            int randomSecond = random.nextInt(60);
-            boardCreationDate = boardCreationDate.withHour(randomHour)
-                    .withMinute(randomMinute)
-                    .withSecond(randomSecond);
-
-            int randomMillis = random.nextInt(1000);
-            int randomNanos = random.nextInt(1_000_000_000);
-            boardCreationDate = boardCreationDate.plusNanos(randomMillis * 1_000_000 + randomNanos);
-
-            if (boardCreationDate.isAfter(now)) {
-                boardCreationDate = now.minusSeconds(random.nextInt(100));
-            }
-
-            String formattedDateTime = boardCreationDate.toString().replace("T", " ");
             long userId = userIndex + 1; // 유저 ID는 1부터 시작
 
-            // 랜덤 hits 값 (0~1000)
-            long randomHits = random.nextInt(35); // 0부터 1000까지의 랜덤 숫자
+            // 보드 생성일자: 유저 생성일자 이후의 랜덤한 시간
+            long randomSeconds = random.nextInt((int) secondsBetween + 1);
+            LocalDateTime boardCreationDate = startDate.plusSeconds(randomSeconds);
 
-            // 보드 제목과 내용에 영화 관련 내용 추가
             String title = getRandomBoardTitle(random);
             String content = getRandomBoardContent(random);
 
+            // 사용자별 제목 중복 확인
+            Set<String> userTitles = userBoardTitles.computeIfAbsent(userId, k -> new HashSet<>());
+            while (userTitles.contains(title)) {
+                title = getRandomBoardTitle(random); // 중복이면 새로운 제목을 생성
+            }
+            userTitles.add(title); // 제목 추가
+
+            String formattedDateTime = boardCreationDate.toString().replace("T", " ");
+            long randomHits = random.nextInt(30); // 0부터 30까지의 랜덤 숫자
+
             boardDataList.add(new BoardData(userId, i, title, content, formattedDateTime, formattedDateTime, randomHits));
         }
-
         // 보드 데이터를 생성일자 기준으로 정렬
         boardDataList.sort(Comparator.comparing(BoardData::getCreatedAt));
-
-        StringBuilder boardSb = new StringBuilder();
-        for (int i = 0; i < boardDataList.size(); i++) {
-            BoardData boardData = boardDataList.get(i);
-            boardSb.append(String.format(
-                    "(%d, '%s', '%s', '%s', '%s', %d)",
-                    boardData.getUserId(), boardData.getTitle(), boardData.getContent(),
-                    boardData.getCreatedAt(), boardData.getUpdatedAt(), boardData.getHits()
-            ));
-
-            if (i < boardDataList.size() - 1) {
-                boardSb.append(",\n");
-            }
-        }
 
         // 댓글 데이터 생성
         List<CommentData> commentDataList = new ArrayList<>();
         Set<String> existingComments = new HashSet<>();  // user_id와 board_id 조합을 저장할 Set
+        int lastBoardCount = 100; // lastCommentNum개의 댓글을 작성할 게시물 개수
+        int lastCommentNum = 125; // 한 게시물에 달릴 댓글의 개수
 
-        for (int i = 1; i <= NUMBER_OF_COMMENT_RECORDS; i++) {
+        // 기본 댓글 생성
+        for (int i = 1; i <= NUMBER_OF_COMMENT_RECORDS - (lastBoardCount * lastCommentNum); i++) {
             long userId;
             long boardId;
             String commentKey;
 
-            // 유저와 보드의 조합이 중복되지 않도록 조합 생성
             do {
-                // 랜덤 보드 선택
                 int boardIndex = random.nextInt(NUMBER_OF_BOARD_RECORDS);
                 BoardData boardData = boardDataList.get(boardIndex);
 
-                // 랜덤 유저 선택
                 int userIndex = random.nextInt(NUMBER_OF_USER_RECORDS);
+                userId = userIndex + 1;
+                boardId = boardData.getBoardId();
 
-                userId = userIndex + 1;  // 유저 ID는 1부터 시작
-                boardId = boardData.getBoardId();  // 보드 ID 가져오기
+                commentKey = userId + "_" + boardId;
+            } while (existingComments.contains(commentKey));
 
-                commentKey = userId + "_" + boardId;  // 유저 ID와 보드 ID 조합 키 생성
-
-            } while (existingComments.contains(commentKey));  // 조합이 이미 존재하면 다시 시도
-
-            // 새로운 조합을 Set에 추가
             existingComments.add(commentKey);
 
-            // 보드 생성일자를 LocalDateTime으로 변환
-            LocalDateTime boardCreationDate = LocalDateTime.parse(boardDataList.get((int) boardId - 1).getCreatedAt().replace(" ", "T"));
-
-            // 댓글 생성일자를 보드 생성일자 이후로 설정
-            LocalDateTime commentCreationDate = boardCreationDate.plusSeconds(i * 100); // 시간 간격을 두고 생성
-
-            int randomHour = commentCreationDate.getHour();
-            int randomMinute = commentCreationDate.getMinute();
-            int randomSecond = commentCreationDate.getSecond();
-            commentCreationDate = commentCreationDate.withHour(randomHour)
-                    .withMinute(randomMinute)
-                    .withSecond(randomSecond);
-
-            int randomMillis = random.nextInt(1000);
-            int randomNanos = random.nextInt(1_000_000_000);
-            commentCreationDate = commentCreationDate.plusNanos(randomMillis * 1_000_000 + randomNanos);
-
-            if (commentCreationDate.isAfter(now)) {
-                commentCreationDate = now.minusSeconds(random.nextInt(100));
-            }
+            long randomSeconds = random.nextInt((int) secondsBetween + 1);
+            LocalDateTime commentCreationDate = startDate.plusSeconds(randomSeconds);
 
             String formattedDateTime = commentCreationDate.toString().replace("T", " ");
-
-            // 댓글 내용에 영화 관련 내용 추가
             String commentContent = getRandomCommentContent(random);
 
-            // CommentData 객체를 생성하고 리스트에 추가
             commentDataList.add(new CommentData(userId, boardId, commentContent, formattedDateTime));
+        }
+
+        // boardDataList의 뒤에서 100개의 게시글에 대해 100개 이상의 댓글 추가
+        int last100StartIndex = boardDataList.size() - lastBoardCount; // 뒤에서 100개의 게시글을 선택
+        for (int i = last100StartIndex; i < boardDataList.size(); i++) {
+            BoardData boardData = boardDataList.get(i);
+            long boardId = boardData.getBoardId();
+
+            // 각 게시글에 대해 100개의 댓글 추가
+            for (int j = 0; j < lastCommentNum; j++) {
+                long userId;
+                String commentKey;
+
+                do {
+                    int userIndex = random.nextInt(NUMBER_OF_USER_RECORDS);
+                    userId = userIndex + 1;
+
+                    commentKey = userId + "_" + boardId;
+                } while (existingComments.contains(commentKey));
+
+                existingComments.add(commentKey);
+
+                long randomSeconds = random.nextInt((int) secondsBetween + 1);
+                LocalDateTime commentCreationDate = startDate.plusSeconds(randomSeconds);
+
+                String formattedDateTime = commentCreationDate.toString().replace("T", " ");
+                String commentContent = getRandomCommentContent(random);
+
+                commentDataList.add(new CommentData(userId, boardId, commentContent, formattedDateTime));
+            }
         }
 
         // 댓글 데이터를 생성일자 기준으로 정렬
         commentDataList.sort(Comparator.comparing(CommentData::getCreatedAt));
 
-        StringBuilder commentSb = new StringBuilder();
-        for (int i = 0; i < commentDataList.size(); i++) {
-            CommentData commentData = commentDataList.get(i);
-            commentSb.append(String.format(
-                "(%d, %d, '%s', '%s', '%s')",
-                commentData.getUserId(), commentData.getBoardId(), commentData.getContent(), commentData.getCreatedAt(), commentData.getCreatedAt()
-            ));
-
-            if (i < commentDataList.size() - 1) {
-                commentSb.append(",\n");
-            }
-        }
-
         // 결과 출력
-        System.out.println("INSERT INTO user (username, password, email, nickname, kakao_id, picture_url, user_status, user_role, created_at, updated_at) VALUES");
-        System.out.println(userSb.toString() + ";");
-        System.out.println("\n\n");
+        userSb
+            .insert(0, "INSERT INTO user (username, password, email, nickname, kakao_id, picture_url, user_status, user_role, created_at, updated_at) VALUES\n")
+            .append(";");
 
-        System.out.println("INSERT INTO board (user_id, title, content, created_at, updated_at, hits) VALUES");
-        System.out.println(boardSb.toString() + ";");
-        System.out.println("\n\n");
+        StringBuilder boardSb = new StringBuilder();
+        for (BoardData boardData : boardDataList) {
+            boardSb.append(String.format(
+                "(%d, '%s', '%s', '%s', '%s', %d),\n",
+                boardData.getUserId(), boardData.getTitle(), boardData.getContent(),
+                boardData.getCreatedAt(), boardData.getUpdatedAt(), boardData.getHits()
+            ));
+        }
+        // 마지막 쉼표를 세미콜론으로 변경
+        if (!boardSb.isEmpty()) {
+            boardSb.setLength(boardSb.length() - 2); // 마지막 ",\n"을 제거
+            boardSb.append(";"); // 세미콜론 추가
+        }
+        boardSb.insert(0, "INSERT INTO board (user_id, title, content, created_at, updated_at, hits) VALUES\n");
 
-        System.out.println("INSERT INTO comment (user_id, board_id, content, created_at, updated_at) VALUES");
-        System.out.println(commentSb.toString() + ";");
-        System.out.println("\n\n");
+        StringBuilder commentSb = new StringBuilder();
+        for (CommentData commentData : commentDataList) {
+            commentSb.append(String.format(
+                "(%d, %d, '%s', '%s', '%s'),\n",
+                commentData.getUserId(), commentData.getBoardId(), commentData.getContent(),
+                commentData.getCreatedAt(), commentData.getCreatedAt()
+            ));
+        }
+        // 마지막 쉼표를 세미콜론으로 변경
+        if (!commentSb.isEmpty()) {
+            commentSb.setLength(commentSb.length() - 2); // 마지막 ",\n"을 제거
+            commentSb.append(";"); // 세미콜론 추가
+        }
+        commentSb.insert(0, "INSERT INTO comment (user_id, board_id, content, created_at, updated_at) VALUES\n");
+
+        // 스레드 풀 생성
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        executorService.execute(() -> {
+            FileUtils.saveSqlToFile("userData.sql", userSb.toString());
+        });
+        executorService.execute(() -> {
+            FileUtils.saveSqlToFile("boardData.sql", boardSb.toString());
+        });
+        executorService.execute(() -> {
+            FileUtils.saveSqlToFile("commentData.sql", commentSb.toString());
+        });
+        // 스레드 풀 종료
+        executorService.shutdown();
+        try {
+            // 모든 스레드가 작업을 완료할 때까지 대기
+            if (executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                System.out.println("모든 작업이 완료되었습니다.");
+            } else {
+                System.out.println("일부 작업이 시간 내에 완료되지 않았습니다.");
+            }
+        } catch (InterruptedException e) {
+            System.out.println("작업 중 인터럽트가 발생했습니다.");
+        }
     }
+
 
     private String generateUniqueKoreanName(Random random, Set<String> usedNicknames) {
         String nickname;

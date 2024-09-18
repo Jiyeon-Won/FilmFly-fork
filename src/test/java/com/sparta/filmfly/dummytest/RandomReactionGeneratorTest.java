@@ -1,5 +1,9 @@
 package com.sparta.filmfly.dummytest;
 
+import com.sparta.filmfly.global.util.FileUtils;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -13,13 +17,10 @@ class RandomReactionGeneratorTest {
     private static final int NUMBER_OF_USERS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_USER_RECORDS; // 생성할 유저 수
     private static final int NUMBER_OF_BOARDS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_BOARD_RECORDS; // 생성할 보드 수
     private static final int NUMBER_OF_COMMENTS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_COMMENT_RECORDS; // 생성할 댓글 수
-    private static final int DAYS_BEFORE = RandomEntityUserAndBoardAndCommentTest.DAYS_BEFORE; // 기준 날짜로부터 몇 일 전
 
     @Test
     public void generateReactionData() {
         Random random = new Random();
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startDate = now.minusDays(DAYS_BEFORE); // 오늘 날짜 기준 DAYS_BEFORE 일 전
 
         // 유저 데이터 생성
         List<Long> userIds = new ArrayList<>();
@@ -38,14 +39,28 @@ class RandomReactionGeneratorTest {
         // 싫어요 리액션 생성
         generateReactions(NUMBER_OF_BAD_REACTIONS, userIds, types, badReactions, random);
 
-        // 결과 출력
-        System.out.println("INSERT INTO good (user_id, type, type_id) VALUES");
-        System.out.println(String.join(",\n", goodReactions) + ";");
-        System.out.println("\n\n");
-
-        System.out.println("INSERT INTO bad (user_id, type, type_id) VALUES");
-        System.out.println(String.join(",\n", badReactions) + ";");
-        System.out.println("\n\n");
+        // 스레드 풀 생성
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(() -> {
+            FileUtils.saveSqlToFile("reactionData.sql",
+                "INSERT INTO good (user_id, type, type_id) VALUES\n"
+                    + String.join(",\n", goodReactions) + ";\n\n\n\n"
+                    + "INSERT INTO bad (user_id, type, type_id) VALUES\n"
+                    + String.join(",\n", badReactions) + ";"
+            );
+        });
+        // 스레드 풀 종료
+        executorService.shutdown();
+        try {
+            // 모든 스레드가 작업을 완료할 때까지 대기
+            if (executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                System.out.println("모든 작업이 완료되었습니다.");
+            } else {
+                System.out.println("일부 작업이 시간 내에 완료되지 않았습니다.");
+            }
+        } catch (InterruptedException e) {
+            System.out.println("작업 중 인터럽트가 발생했습니다.");
+        }
     }
 
     private void generateReactions(int numberOfReactions, List<Long> userIds, ReactionContentTypeEnum[] types,
@@ -79,7 +94,6 @@ class RandomReactionGeneratorTest {
             }
         }
     }
-
 
     private List<Long> getBoardIds() {
         List<Long> boardIds = new ArrayList<>();

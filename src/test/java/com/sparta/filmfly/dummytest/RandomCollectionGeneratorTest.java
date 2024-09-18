@@ -1,16 +1,27 @@
 package com.sparta.filmfly.dummytest;
 
-import org.junit.jupiter.api.Test;
-
+import com.sparta.filmfly.global.util.FileUtils;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.Test;
 
 class RandomCollectionGeneratorTest {
     private static final List<Long> MOVIE_IDS = RandomReviewGeneratorTest.MOVIE_IDS;
-    public static final int NUMBER_OF_COLLECTIONS = 300; // 생성할 컬렉션 수
+    public static final int NUMBER_OF_COLLECTIONS = 4000; // 생성할 컬렉션 수
     private static final int MIN_MOVIES_PER_COLLECTION = 0; // 컬렉션당 최소 영화 수
-    private static final int MAX_MOVIES_PER_COLLECTION = 20; // 컬렉션당 최대 영화 수
+    private static final int MAX_MOVIES_PER_COLLECTION = 30; // 컬렉션당 최대 영화 수
     private static final int NUMBER_OF_USERS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_USER_RECORDS; // 생성할 유저 수
     private static final int DAYS_BEFORE = RandomEntityUserAndBoardAndCommentTest.DAYS_BEFORE; // 기준 날짜로부터 몇 일 전
 
@@ -56,7 +67,7 @@ class RandomCollectionGeneratorTest {
         // 컬렉션 데이터 생성
         List<CollectionData> collections = new ArrayList<>();
         List<MovieCollectionData> movieCollections = new ArrayList<>();
-        generateCollections(NUMBER_OF_COLLECTIONS, userIds, MOVIE_IDS, collections, movieCollections, random, startDate, secondsBetween);
+        generateCollections(userIds, collections, movieCollections, random, startDate, secondsBetween);
 
         // 생성 날짜 기준으로 정렬
         collections.sort(Comparator.comparing(CollectionData::getCreatedAt));
@@ -75,10 +86,8 @@ class RandomCollectionGeneratorTest {
             }
         }
         sb.append(";");
-        System.out.println(sb.toString());
 
-        sb = new StringBuilder();
-        sb.append("\n\nINSERT INTO movie_collection (collection_id, movie_id, created_at, updated_at) VALUES\n");
+        sb.append("\n\n\n\nINSERT INTO movie_collection (collection_id, movie_id, created_at, updated_at) VALUES\n");
         for (int i = 0; i < movieCollections.size(); i++) {
             MovieCollectionData movieCollection = movieCollections.get(i);
             sb.append(String.format("(%d, %d, '%s', '%s')",
@@ -89,70 +98,88 @@ class RandomCollectionGeneratorTest {
             }
         }
         sb.append(";");
-        System.out.println(sb.toString());
+
+        // 스레드 풀 생성
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(() -> {
+            FileUtils.saveSqlToFile("collectionData.sql", sb.toString());
+        });
+        // 스레드 풀 종료
+        executorService.shutdown();
+        try {
+            // 모든 스레드가 작업을 완료할 때까지 대기
+            if (executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                System.out.println("모든 작업이 완료되었습니다.");
+            } else {
+                System.out.println("일부 작업이 시간 내에 완료되지 않았습니다.");
+            }
+        } catch (InterruptedException e) {
+            System.out.println("작업 중 인터럽트가 발생했습니다.");
+        }
     }
 
-    private void generateCollections(int numberOfCollections, List<Long> userIds, List<Long> movieIds,
+    private void generateCollections(List<Long> userIds,
         List<CollectionData> collections, List<MovieCollectionData> movieCollections, Random random, LocalDateTime startDate, long secondsBetween) {
+        // 사용자별로 이미 사용한 컬렉션 이름을 추적하는 맵
         Map<Long, Set<String>> userCollectionNames = new HashMap<>();
         for (Long userId : userIds) {
-            userCollectionNames.put(userId, new HashSet<>());
+            userCollectionNames.put(userId, new HashSet<>()); // 각 사용자에 대한 컬렉션 이름 Set을 초기화
         }
 
-        for (int i = 0; i < numberOfCollections; i++) {
-            Long userId = getRandomElement(userIds, random);
-            Set<String> usedNames = userCollectionNames.get(userId);
+        for (int i = 0; i < RandomCollectionGeneratorTest.NUMBER_OF_COLLECTIONS; i++) {
+            Long userId = getRandomElement(userIds, random); // 랜덤한 사용자 선택
+            Set<String> usedNames = userCollectionNames.get(userId); // 해당 사용자의 이미 사용된 컬렉션 이름
 
-            if (!COLLECTION_NAMES.isEmpty()) {
-                String collectionName = generateUniqueName(usedNames, random);
-                usedNames.add(collectionName);  // 사용된 이름에 추가
+            // 컬렉션 이름이 중복되지 않도록 고유한 이름을 생성
+            String collectionName = generateUniqueName(usedNames, random);
+            usedNames.add(collectionName);  // 사용된 이름을 사용자별 Set에 추가
 
-                String collectionContent = getRandomElement(COLLECTION_CONTENTS, random);
+            String collectionContent = getRandomElement(COLLECTION_CONTENTS, random);
+
+            // 생성시간과 수정시간 설정
+            LocalDateTime collectionCreationDate = startDate.plusSeconds(random.nextInt((int) secondsBetween + 1));
+            LocalDateTime collectionUpdateDate = collectionCreationDate.plusDays(random.nextInt(10)); // 수정시간은 생성시간 이후 0~10일 사이
+
+            String formattedCreationDate = collectionCreationDate.toString().replace("T", " ");
+            String formattedUpdateDate = collectionUpdateDate.toString().replace("T", " ");
+
+            // 컬렉션 데이터를 저장
+            collections.add(new CollectionData(userId, collectionName, collectionContent, formattedCreationDate, formattedUpdateDate));
+
+            long collectionId = collections.size(); // 임시로 컬렉션 ID 할당
+
+            // 영화 컬렉션 데이터 생성
+            int moviesPerCollection = Math.min(random.nextInt(MAX_MOVIES_PER_COLLECTION - MIN_MOVIES_PER_COLLECTION + 1) + MIN_MOVIES_PER_COLLECTION, RandomCollectionGeneratorTest.MOVIE_IDS.size());
+            Set<Long> uniqueMovies = new HashSet<>();
+            while (uniqueMovies.size() < moviesPerCollection) {
+                Long movieId = getRandomElement(RandomCollectionGeneratorTest.MOVIE_IDS, random);
+                uniqueMovies.add(movieId);
 
                 // 생성시간과 수정시간 설정
-                LocalDateTime collectionCreationDate = startDate.plusSeconds(random.nextInt((int) secondsBetween + 1));
-                LocalDateTime collectionUpdateDate = collectionCreationDate.plusDays(random.nextInt(10)); // 수정시간은 생성시간 이후 0~10일 사이
+                LocalDateTime movieCollectionCreationDate = startDate.plusSeconds(random.nextInt((int) secondsBetween + 1));
+                LocalDateTime movieCollectionUpdateDate = movieCollectionCreationDate.plusDays(random.nextInt(10)); // 수정시간은 생성시간 이후 0~10일 사이
 
-                String formattedCreationDate = collectionCreationDate.toString().replace("T", " ");
-                String formattedUpdateDate = collectionUpdateDate.toString().replace("T", " ");
+                String formattedMovieCollectionCreationDate = movieCollectionCreationDate.toString().replace("T", " ");
+                String formattedMovieCollectionUpdateDate = movieCollectionUpdateDate.toString().replace("T", " ");
 
-                // 컬렉션 데이터를 저장
-                collections.add(new CollectionData(userId, collectionName, collectionContent, formattedCreationDate, formattedUpdateDate));
-
-                Long collectionId = (long) (collections.size()); // 임시로 컬렉션 ID 할당
-
-                // 영화 컬렉션 데이터 생성
-                int moviesPerCollection = Math.min(random.nextInt(MAX_MOVIES_PER_COLLECTION - MIN_MOVIES_PER_COLLECTION + 1) + MIN_MOVIES_PER_COLLECTION, movieIds.size());
-                Set<Long> uniqueMovies = new HashSet<>();
-                while (uniqueMovies.size() < moviesPerCollection) {
-                    Long movieId = getRandomElement(movieIds, random);
-                    uniqueMovies.add(movieId);
-
-                    // 생성시간과 수정시간 설정
-                    LocalDateTime movieCollectionCreationDate = startDate.plusSeconds(random.nextInt((int) secondsBetween + 1));
-                    LocalDateTime movieCollectionUpdateDate = movieCollectionCreationDate.plusDays(random.nextInt(10)); // 수정시간은 생성시간 이후 0~10일 사이
-
-                    String formattedMovieCollectionCreationDate = movieCollectionCreationDate.toString().replace("T", " ");
-                    String formattedMovieCollectionUpdateDate = movieCollectionUpdateDate.toString().replace("T", " ");
-
-                    // 영화 컬렉션 데이터를 저장
-                    movieCollections.add(new MovieCollectionData(collectionId, movieId, formattedMovieCollectionCreationDate, formattedMovieCollectionUpdateDate));
-                }
+                // 영화 컬렉션 데이터를 저장
+                movieCollections.add(new MovieCollectionData(collectionId, movieId, formattedMovieCollectionCreationDate, formattedMovieCollectionUpdateDate));
             }
         }
     }
 
-
+    // 사용자별로 고유한 컬렉션 이름을 생성하는 메소드
     private String generateUniqueName(Set<String> usedNames, Random random) {
-        String baseName = getRandomElement(COLLECTION_NAMES, random);
+        String baseName = getRandomElement(COLLECTION_NAMES, random); // 기본 이름을 랜덤하게 선택
         String uniqueName = baseName;
         int counter = 1;
 
+        // 사용된 이름이 있는지 확인하고, 중복될 경우 이름 뒤에 번호를 붙여서 고유하게 만듦
         while (usedNames.contains(uniqueName)) {
             uniqueName = baseName + " " + counter++;
         }
 
-        return uniqueName;
+        return uniqueName; // 중복되지 않는 고유한 이름 반환
     }
 
     private <T> T getRandomElement(List<T> list, Random random) {

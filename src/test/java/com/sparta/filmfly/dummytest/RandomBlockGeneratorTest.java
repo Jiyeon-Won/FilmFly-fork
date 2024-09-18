@@ -1,13 +1,22 @@
 package com.sparta.filmfly.dummytest;
 
-import org.junit.jupiter.api.Test;
-
+import com.sparta.filmfly.global.util.FileUtils;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.Test;
 
 class RandomBlockGeneratorTest {
-    public static final int NUMBER_OF_BLOCKS = 100; // 생성할 차단 수
+    public static final int NUMBER_OF_BLOCKS = 3000; // 생성할 차단 수
     private static final int NUMBER_OF_USERS = RandomEntityUserAndBoardAndCommentTest.NUMBER_OF_USER_RECORDS; // 생성할 유저 수
     private static final int DAYS_BEFORE = RandomEntityUserAndBoardAndCommentTest.DAYS_BEFORE; // 기준 날짜로부터 몇 일 전
 
@@ -36,7 +45,7 @@ class RandomBlockGeneratorTest {
 
         // 차단 데이터 생성
         List<BlockData> blocks = new ArrayList<>();
-        generateBlocks(NUMBER_OF_BLOCKS, userIds, blocks, random, startDate, secondsBetween);
+        generateBlocks(userIds, blocks, random, startDate, secondsBetween);
 
         // 생성 날짜 기준으로 정렬
         blocks.sort(Comparator.comparing(BlockData::getCreatedAt));
@@ -54,13 +63,30 @@ class RandomBlockGeneratorTest {
             }
         }
         sb.append(";");
-        System.out.println(sb.toString());
+
+        // 스레드 풀 생성
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(() -> {
+            FileUtils.saveSqlToFile("blockData.sql", sb.toString());
+        });
+        // 스레드 풀 종료
+        executorService.shutdown();
+        try {
+            // 모든 스레드가 작업을 완료할 때까지 대기
+            if (executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                System.out.println("모든 작업이 완료되었습니다.");
+            } else {
+                System.out.println("일부 작업이 시간 내에 완료되지 않았습니다.");
+            }
+        } catch (InterruptedException e) {
+            System.out.println("작업 중 인터럽트가 발생했습니다.");
+        }
     }
 
-    private void generateBlocks(int numberOfBlocks, List<Long> userIds, List<BlockData> blocks, Random random,
+    private void generateBlocks(List<Long> userIds, List<BlockData> blocks, Random random,
         LocalDateTime startDate, long secondsBetween) {
         Set<String> uniqueBlocks = new HashSet<>();
-        while (blocks.size() < numberOfBlocks) {
+        while (blocks.size() < NUMBER_OF_BLOCKS) {
             Long blockerId = getRandomElement(userIds, random);
             Long blockedId = getRandomElement(userIds, random);
 
@@ -76,20 +102,11 @@ class RandomBlockGeneratorTest {
                     String formattedCreationDate = blockCreationDate.toString().replace("T", " ");
                     String formattedUpdateDate = blockUpdateDate.toString().replace("T", " ");
 
-                    // BlockData 객체로 차단 기록을 저장
-                    BlockData newBlock = new BlockData(blockerId, blockedId, memo, formattedCreationDate, formattedUpdateDate);
-
-                    // 중복 확인 후 추가
-                    if (blocks.stream().noneMatch(block -> block.getBlockerId() == newBlock.getBlockerId() &&
-                        block.getBlockedId() == newBlock.getBlockedId() &&
-                        block.getCreatedAt().equals(newBlock.getCreatedAt()))) {
-                        blocks.add(newBlock);
-                    }
+                    blocks.add(new BlockData(blockerId, blockedId, memo, formattedCreationDate, formattedUpdateDate));
                 }
             }
         }
     }
-
 
     private <T> T getRandomElement(List<T> list, Random random) {
         return list.get(random.nextInt(list.size()));

@@ -1,6 +1,10 @@
 package com.sparta.filmfly.dummytest;
 
 import com.sparta.filmfly.domain.report.entity.ReportTypeEnum;
+import com.sparta.filmfly.global.util.FileUtils;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -49,7 +53,7 @@ class RandomReportGeneratorTest {
 
         // 신고 데이터 생성
         List<ReportData> reports = new ArrayList<>();
-        generateReports(NUMBER_OF_REPORTS, userIds, reports, random, startDate, secondsBetween);
+        generateReports(userIds, reports, random, startDate, secondsBetween);
 
         // 생성 날짜 기준으로 정렬
         reports.sort(Comparator.comparing(ReportData::getCreatedAt));
@@ -67,14 +71,31 @@ class RandomReportGeneratorTest {
             }
         }
         sb.append(";");
-        System.out.println(sb.toString());
+
+        // 스레드 풀 생성
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(() -> {
+            FileUtils.saveSqlToFile("reportData.sql", sb.toString());
+        });
+        // 스레드 풀 종료
+        executorService.shutdown();
+        try {
+            // 모든 스레드가 작업을 완료할 때까지 대기
+            if (executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                System.out.println("모든 작업이 완료되었습니다.");
+            } else {
+                System.out.println("일부 작업이 시간 내에 완료되지 않았습니다.");
+            }
+        } catch (InterruptedException e) {
+            System.out.println("작업 중 인터럽트가 발생했습니다.");
+        }
     }
 
-    private void generateReports(int numberOfReports, List<Long> userIds, List<ReportData> reports, Random random,
+    private void generateReports(List<Long> userIds, List<ReportData> reports, Random random,
         LocalDateTime startDate, long secondsBetween) {
         Map<String, Set<String>> reportMap = new HashMap<>(); // reporterId와 reportedId에 대한 신고 이유 추적
 
-        while (reports.size() < numberOfReports) {
+        while (reports.size() < NUMBER_OF_REPORTS) {
             Long reporterId = getRandomElement(userIds, random);
             Long reportedId = getRandomElement(userIds, random);
 
@@ -113,16 +134,11 @@ class RandomReportGeneratorTest {
     }
 
     private Long getTypeIdByType(ReportTypeEnum type, Random random) {
-        switch (type) {
-            case BOARD:
-                return (long) (random.nextInt(NUMBER_OF_BOARDS) + 1);
-            case REVIEW:
-                return (long) (random.nextInt(NUMBER_OF_REVIEWS) + 1);
-            case COMMENT:
-                return (long) (random.nextInt(NUMBER_OF_COMMENTS) + 1);
-            default:
-                throw new IllegalArgumentException("Unknown ReportTypeEnum: " + type);
-        }
+        return switch (type) {
+            case BOARD -> (long) (random.nextInt(NUMBER_OF_BOARDS) + 1);
+            case REVIEW -> (long) (random.nextInt(NUMBER_OF_REVIEWS) + 1);
+            case COMMENT -> (long) (random.nextInt(NUMBER_OF_COMMENTS) + 1);
+        };
     }
 
     // 신고 데이터를 담기 위한 내부 클래스
