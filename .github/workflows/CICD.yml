@@ -23,6 +23,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Check Redis Environment Variables
+        run: |
+          echo "REDIS_HOST: ${{ secrets.REDIS_HOST }}"
+          echo "REDIS_PORT: ${{ secrets.REDIS_PORT }}"
+
       - name: Build with Gradle
         run: ./gradlew clean build
         env:
@@ -40,6 +45,11 @@ jobs:
           TMDB_API_AUTHORIZATION: ${{ secrets.TMDB_API_AUTHORIZATION }}
           REDIS_HOST: ${{ secrets.REDIS_HOST }}
           REDIS_PORT: ${{ secrets.REDIS_PORT }}
+
+      - name: Check Redis Environment Variables
+        run: |
+          echo "REDIS_HOST: ${{ secrets.REDIS_HOST }}"
+          echo "REDIS_PORT: ${{ secrets.REDIS_PORT }}"
 
       - name: Set up Docker QEMU(Quick Emulator)
         uses: docker/setup-qemu-action@v3
