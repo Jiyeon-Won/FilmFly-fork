@@ -1,5 +1,6 @@
 package com.sparta.filmfly.global.config;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,12 @@ public class RedisConfig {
 
     @Value("${redis.port}")
     private int redisPort;
+
+    @PostConstruct
+    public void init() {
+        System.out.println("Redis Host: " + redisHost);
+        System.out.println("Redis Port: " + redisPort);
+    }
 
     @Bean
     public LettuceConnectionFactory lettuceConnectionFactory() {
