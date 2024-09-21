@@ -39,7 +39,6 @@ jobs:
           AWS_S3_SECRET_KEY: ${{ secrets.AWS_S3_SECRET_KEY }}
           TMDB_API_AUTHORIZATION: ${{ secrets.TMDB_API_AUTHORIZATION }}
           REDIS_HOST: ${{ secrets.REDIS_HOST }}
-          REDIS_PORT: ${{ secrets.REDIS_PORT }}
 
       - name: Set up Docker QEMU(Quick Emulator)
         uses: docker/setup-qemu-action@v3
