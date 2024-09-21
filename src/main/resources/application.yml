@@ -145,5 +145,5 @@ cloud:
       secret-key: ${AWS_S3_SECRET_KEY}
 
 redis:
-  redisHost: ${REDIS_HOST}
-  redisPort: ${REDIS_PORT}
+  host: localhost
+  port: 6379
