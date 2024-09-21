@@ -8,6 +8,10 @@
 # QueryDSL QClass 포함 안함
 /src/main/generated/**
 
+/src/test/java/com/sparta/filmfly/dummytest
+/src/test/java/com/sparta/filmfly/dummytest/
+/src/test/java/com/sparta/filmfly/dummytest/**
+
 .gradle/**
 build/**
 
