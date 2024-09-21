@@ -9,6 +9,7 @@
 /src/main/generated/**
 
 /src/test/java/com/sparta/filmfly/dummytest/**
+/src/main/resources/dummy/**
 /filmfly_backup.sql
 
 .gradle/**

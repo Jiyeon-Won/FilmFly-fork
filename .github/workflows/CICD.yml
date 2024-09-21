@@ -94,7 +94,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
-            sudo docker-compose -f docker-compose-mysql.yml up -d
+            sudo docker-compose -f docker-compose-other.yml up -d
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
             sudo docker-compose -f docker-compose-${{ env.TARGET_UPSTREAM }}.yml up -d
 

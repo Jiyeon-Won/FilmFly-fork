@@ -75,6 +75,10 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+test {
+    maxHeapSize = "8g"
+}
+
 //// gradle build 시
 //// QueryDSL QClass 파일 생성 위치 지정
 //def generated = 'src/main/generated'
