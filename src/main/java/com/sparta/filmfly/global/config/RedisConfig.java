@@ -21,6 +21,7 @@ public class RedisConfig {
 
     @Bean
     public LettuceConnectionFactory lettuceConnectionFactory() {
+        System.out.println("레디스 설정 -> " + redisHost + ":" + redisPort);
         return new LettuceConnectionFactory(redisHost, redisPort);
     }
 

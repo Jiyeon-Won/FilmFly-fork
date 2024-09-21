@@ -127,15 +127,12 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-# 혹시나 에러가 뜨면 "_"에서 "-"으로 바꾸기
-
 jwt_secret_key: ${JWT_SECRET_KEY}
 admin_password: ${ADMIN_PASSWORD}
 
 kakao:
   client_id: ${KAKAO_CLIENT_ID}
-  redirect_uri: http://localhost:63342/film-fly/front/html/login.html
-#  redirect_uri: https://www.filmfly.life/html/login.html
+  redirect_uri: https://www.filmfly.shop/html/login.html
 
 cloud:
   aws:
