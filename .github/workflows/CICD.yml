@@ -32,7 +32,7 @@ jobs:
             echo "REDIS_HOST is not localhost"
           fi
           REDIS_PORT="${{ secrets.REDIS_PORT }}"
-          if [ "REDIS_PORT" = "6379" ]; then
+          if [ "$REDIS_PORT" = "6379" ]; then
             echo "REDIS_PORT is set to 6379"
           else
             echo "REDIS_PORT is not 6379"
@@ -66,7 +66,7 @@ jobs:
             echo "REDIS_HOST is not localhost"
           fi
           REDIS_PORT="${{ secrets.REDIS_PORT }}"
-          if [ "REDIS_PORT" = "6379" ]; then
+          if [ "$REDIS_PORT" = "6379" ]; then
             echo "REDIS_PORT is set to 6379"
           else
             echo "REDIS_PORT is not 6379"
