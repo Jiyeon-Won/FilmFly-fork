@@ -67,7 +67,7 @@ public class WebSecurityConfig {
 
         http.authorizeHttpRequests(authorizeHttpRequests ->
                 authorizeHttpRequests
-                    .requestMatchers("/test/**").permitAll()
+                    .requestMatchers("/hc", "/env").permitAll()
                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                     .requestMatchers("/emails/**").permitAll()
                     .requestMatchers("/users/signup").permitAll()

@@ -8,6 +8,8 @@
 # QueryDSL QClass 포함 안함
 /src/main/generated/**
 
+/filmfly_backup.sql
+
 .gradle/**
 build/**
 

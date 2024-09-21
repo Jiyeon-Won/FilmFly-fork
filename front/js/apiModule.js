@@ -1,5 +1,6 @@
-const serverUrl = 'https://api.filmfly.life';   // 기본 URL, 필요에 따라 변경
-// const serverUrl = 'http://localhost:8080';    // 기본 URL, 필요에 따라 변경
+const serverUrl = window.location.hostname === 'localhost'
+    ? 'http://localhost:8080'
+    : 'https://api.filmfly.shop';
 
 // const imageUrl = 'https://image.tmdb.org/t/p/w600_and_h900_bestv2';
 const imageUrl = 'https://image.tmdb.org/t/p/w220_and_h330_face';
