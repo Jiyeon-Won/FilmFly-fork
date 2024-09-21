@@ -128,11 +128,6 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-
 jwt_secret_key: ${JWT_SECRET_KEY}
 admin_password: ${ADMIN_PASSWORD}
 
