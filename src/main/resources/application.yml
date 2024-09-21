@@ -121,11 +121,16 @@ spring:
           CharSet: utf-8
           characterEncoding: utf-8
           useUnicode: true
+
   servlet:
     multipart:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
+
+  batch:
+      job:
+        enabled: false  # 서버 재시작시 배치 자동실행 방지
 
 jwt_secret_key: ${JWT_SECRET_KEY}
 admin_password: ${ADMIN_PASSWORD}
@@ -145,5 +150,5 @@ cloud:
       secret-key: ${AWS_S3_SECRET_KEY}
 
 redis:
-  host: localhost
-  port: 6379
+  host: ${REDIS_HOST}
+  port: ${REDIS_PORT}
