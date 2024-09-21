@@ -13,23 +13,14 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
 
-    @Value("${redis.host}")
+    @Value("${redis.redisHost}")
     private String redisHost;
 
-    @Value("${redis.port}")
+    @Value("${redis.redisPort}")
     private int redisPort;
 
     @Bean
     public LettuceConnectionFactory lettuceConnectionFactory() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("레디스 설정 ->");
-        if (!redisHost.isBlank()) {
-            sb.append(redisHost).append(":");
-        }
-        if (redisPort > 0) {
-            sb.append(redisPort);
-        }
-        System.out.println(sb);
         return new LettuceConnectionFactory(redisHost, redisPort);
     }
 
