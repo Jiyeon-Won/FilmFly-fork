@@ -24,10 +24,12 @@ public class WebConfig implements WebMvcConfigurer {
                 "http://localhost:63342",
                 "https://localhost:8080",
                 "https://localhost:63342",
-                "https://www.filmfly.life",
-                "https://api.filmfly.life"
+                "https://www.filmfly.shop",
+                "https://api.filmfly.shop"
             )
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
+            .allowedHeaders("Content-Type", "Authorization", "Accept")
+            .allowedHeaders("Set-Cookie")
             .allowCredentials(true)
             .maxAge(3600);
     }
