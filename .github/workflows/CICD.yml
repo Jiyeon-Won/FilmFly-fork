@@ -94,21 +94,20 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
-            echo "DB_URL=${{ secrets.DB_URL }}" >> filmfly.env
-            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> filmfly.env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> filmfly.env
-            echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> filmfly.env
-            echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> filmfly.env
-            echo "LIVE_SERVER_IP=${{ secrets.LIVE_SERVER_IP }}" >> filmfly.env
-            echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> filmfly.env
-            echo "MAIL_ACCOUNT=${{ secrets.MAIL_ACCOUNT }}" >> filmfly.env
-            echo "MAIL_APP_PASSWORD=${{ secrets.MAIL_APP_PASSWORD }}" >> filmfly.env
-            echo "AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}" >> filmfly.env
-            echo "AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}" >> filmfly.env
-            echo "TMDB_API_AUTHORIZATION=${{ secrets.TMDB_API_AUTHORIZATION }}" >> filmfly.env
-            echo "REDIS_HOST=redis" >> filmfly.env
-            echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> filmfly.env
-            scp -o StrictHostKeyChecking=no filmfly.env ubuntu@${{ secrets.LIVE_SERVER_IP }}:/home/ubuntu/
+            echo "DB_URL=${{ secrets.DB_URL }}" > /home/ubuntu/filmfly.env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> /home/ubuntu/filmfly.env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> /home/ubuntu/filmfly.env
+            echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> /home/ubuntu/filmfly.env
+            echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> /home/ubuntu/filmfly.env
+            echo "LIVE_SERVER_IP=${{ secrets.LIVE_SERVER_IP }}" >> /home/ubuntu/filmfly.env
+            echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> /home/ubuntu/filmfly.env
+            echo "MAIL_ACCOUNT=${{ secrets.MAIL_ACCOUNT }}" >> /home/ubuntu/filmfly.env
+            echo "MAIL_APP_PASSWORD=${{ secrets.MAIL_APP_PASSWORD }}" >> /home/ubuntu/filmfly.env
+            echo "AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}" >> /home/ubuntu/filmfly.env
+            echo "AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}" >> /home/ubuntu/filmfly.env
+            echo "TMDB_API_AUTHORIZATION=${{ secrets.TMDB_API_AUTHORIZATION }}" >> /home/ubuntu/filmfly.env
+            echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> /home/ubuntu/filmfly.env
+            echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> /home/ubuntu/filmfly.env
 
       - name: Docker compose
         uses: appleboy/ssh-action@master
