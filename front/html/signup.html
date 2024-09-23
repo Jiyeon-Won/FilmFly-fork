@@ -226,7 +226,6 @@
 
         apiModule.POST('/emails/code-send', data, function (result, status, xhr) {
             $('#emailFeedback').text('인증번호가 발송되었습니다.').css('color', 'green');
-            alert('인증번호가 발송되었습니다.');
             startTimer(180); // 타이머 시작 (3분)
         }, function (xhr, status, error) {
             let errorMsg = xhr.responseJSON.message || "이미 존재하는 이메일입니다.";
