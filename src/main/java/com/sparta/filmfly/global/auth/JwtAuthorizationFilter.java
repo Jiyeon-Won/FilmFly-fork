@@ -43,11 +43,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String http = req.getMethod();
         String uri = req.getRequestURI();
-        log.info("요청된 URI: {} {}", http, uri);
+        System.out.printf("요청된 URI: %s %s\n", http, uri);
 
         String accessToken = CookieUtils.getCookie(req, "accessToken");
         if (!StringUtils.hasText(accessToken)) {
-            log.warn("accessToken 없음");
             filterChain.doFilter(req, res);
             return;
         }
