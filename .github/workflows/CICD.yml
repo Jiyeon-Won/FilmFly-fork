@@ -86,6 +86,30 @@ jobs:
             echo "TARGET_UPSTREAM=blue" >> $GITHUB_ENV
           fi
 
+      - name: Set filmfly.env file
+        uses: appleboy/ssh-action@master
+        with:
+          username: ubuntu
+          host: ${{ secrets.LIVE_SERVER_IP }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            echo "DB_URL=${{ secrets.DB_URL }}" >> filmfly.env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> filmfly.env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> filmfly.env
+            echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> filmfly.env
+            echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> filmfly.env
+            echo "LIVE_SERVER_IP=${{ secrets.LIVE_SERVER_IP }}" >> filmfly.env
+            echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> filmfly.env
+            echo "MAIL_ACCOUNT=${{ secrets.MAIL_ACCOUNT }}" >> filmfly.env
+            echo "MAIL_APP_PASSWORD=${{ secrets.MAIL_APP_PASSWORD }}" >> filmfly.env
+            echo "AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}" >> filmfly.env
+            echo "AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}" >> filmfly.env
+            echo "TMDB_API_AUTHORIZATION=${{ secrets.TMDB_API_AUTHORIZATION }}" >> filmfly.env
+            echo "REDIS_HOST=redis" >> filmfly.env
+            echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> filmfly.env
+            scp filmfly.env ubuntu@${{ secrets.LIVE_SERVER_IP }}:/home/ubuntu/
+
       - name: Docker compose
         uses: appleboy/ssh-action@master
         with:
@@ -94,37 +118,10 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
-            DB_URL=${{ secrets.DB_URL }} \
-            DB_USERNAME=${{ secrets.DB_USERNAME }} \
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
-            ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} \
-            LIVE_SERVER_IP=${{ secrets.LIVE_SERVER_IP }} \
-            KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
-            MAIL_ACCOUNT=${{ secrets.MAIL_ACCOUNT }} \
-            MAIL_APP_PASSWORD=${{ secrets.MAIL_APP_PASSWORD }} \
-            AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }} \
-            AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }} \
-            TMDB_API_AUTHORIZATION=${{ secrets.TMDB_API_AUTHORIZATION }} \
-            REDIS_HOST=${{ secrets.REDIS_HOST }} \
-            REDIS_PORT=${{ secrets.REDIS_PORT }} \
             sudo docker-compose -f docker-compose-other.yml up -d
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
-            sudo docker-compose -f docker-compose-${{ env.TARGET_UPSTREAM }}.yml up -d
-          DB_URL: ${{ secrets.DB_URL }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-          LIVE_SERVER_IP: ${{ secrets.LIVE_SERVER_IP }}
-          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
-          MAIL_ACCOUNT: ${{ secrets.MAIL_ACCOUNT }}
-          MAIL_APP_PASSWORD: ${{ secrets.MAIL_APP_PASSWORD }}
-          AWS_S3_ACCESS_KEY: ${{ secrets.AWS_S3_ACCESS_KEY }}
-          AWS_S3_SECRET_KEY: ${{ secrets.AWS_S3_SECRET_KEY }}
-          TMDB_API_AUTHORIZATION: ${{ secrets.TMDB_API_AUTHORIZATION }}
-          REDIS_HOST: ${{ secrets.REDIS_HOST }}
-          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+            sudo docker-compose --env-file /home/ubuntu/filmfly.env -f docker-compose-${{ env.TARGET_UPSTREAM }}.yml up -d
+
       - name: Health Check on EC2 Instance
         uses: appleboy/ssh-action@master
         with:
