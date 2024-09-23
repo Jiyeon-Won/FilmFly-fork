@@ -27,7 +27,6 @@ server:
 logging.level:
   root: warn
   org.hibernate.SQL: error
-  org.springframework.mail: debug
 
 serverName: blue_server
 
@@ -49,7 +48,6 @@ server:
 logging.level:
   root: warn
   org.hibernate.SQL: error
-  org.springframework.mail: debug
 
 serverName: green_server
 
