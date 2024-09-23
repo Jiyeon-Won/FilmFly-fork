@@ -26,6 +26,7 @@ public class AsyncEmailService {
             mailSender.send(msg);
             return CompletableFuture.completedFuture(true);
         } catch (Exception e) {
+            log.error(String.valueOf(e));
             return CompletableFuture.completedFuture(false);
         }
     }

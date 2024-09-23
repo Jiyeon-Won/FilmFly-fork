@@ -103,11 +103,9 @@ public class EmailVerificationService {
             .thenAccept(isEmailSent -> {
                 if (Boolean.FALSE.equals(isEmailSent)) {
                     log.error("이메일 전송 실패: {}", email);
-                    throw new AsyncException(ResponseCodeEnum.EMAIL_VERIFICATION_SEND_FAILED);
                 }
             })
             .exceptionally(ex -> {
-                log.error("이메일 전송 중 예외 발생: {}, 원인: {}", email, ex.getMessage(), ex);
                 throw new AsyncException(ResponseCodeEnum.EMAIL_VERIFICATION_SEND_FAILED);
             });
     }
