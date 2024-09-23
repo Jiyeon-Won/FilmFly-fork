@@ -31,7 +31,7 @@ public class AsyncEmailService {
             mailSender.send(msg);
             return CompletableFuture.completedFuture(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("\n|{}|\n이메일 전송 실패 - 받는 사람: {}, 제목: {}, 에러 메시지: {}", fromEmail, to, subject, e.getMessage(), e);
             return CompletableFuture.completedFuture(false);
         }
     }
