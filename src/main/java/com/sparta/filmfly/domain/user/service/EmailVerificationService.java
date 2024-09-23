@@ -14,6 +14,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,6 +26,7 @@ public class EmailVerificationService {
     private final RedisService redisService;
     private final UserRepository userRepository;
     private final AsyncEmailService asyncEmailService;
+    private final JavaMailSender mailSender;
 
     private static final long EXPIRATION_TIME = 3 * 60; // 3분 (180초)
     private static final long SEND_LIMIT_RESET_TIME = 60 * 60; // 1시간 (3600초)
@@ -61,7 +64,8 @@ public class EmailVerificationService {
 
         // 이메일 발송
         String emailText = "이메일 인증 코드는 다음과 같습니다: " + verificationCode;
-        this.sendEmail(email, emailText);
+//        this.sendEmail(email, emailText);
+        this.sendEmailSync(email, emailText);
 
         // 인증 상태 초기화 (아직 인증되지 않음)
         String verificationStatusKey = email + ":verified";
@@ -106,6 +110,15 @@ public class EmailVerificationService {
                 log.error("이메일 전송 중 예외 발생: {}", email, ex);
                 throw new AsyncException(ResponseCodeEnum.EMAIL_VERIFICATION_SEND_FAILED);
             });
+    }
+
+    private void sendEmailSync(String email, String emailText) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("이메일 인증 코드");
+        message.setText(emailText);
+
+        mailSender.send(message);
     }
 
     private String generateVerificationCode() {
