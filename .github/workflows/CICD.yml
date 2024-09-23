@@ -25,21 +25,6 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew clean build
-#        env:
-#          DB_URL: ${{ secrets.DB_URL }}
-#          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-#          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-#          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-#          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-#          LIVE_SERVER_IP: ${{ secrets.LIVE_SERVER_IP }}
-#          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
-#          MAIL_ACCOUNT: ${{ secrets.MAIL_ACCOUNT }}
-#          MAIL_APP_PASSWORD: ${{ secrets.MAIL_APP_PASSWORD }}
-#          AWS_S3_ACCESS_KEY: ${{ secrets.AWS_S3_ACCESS_KEY }}
-#          AWS_S3_SECRET_KEY: ${{ secrets.AWS_S3_SECRET_KEY }}
-#          TMDB_API_AUTHORIZATION: ${{ secrets.TMDB_API_AUTHORIZATION }}
-#          REDIS_HOST: ${{ secrets.REDIS_HOST }}
-#          REDIS_PORT: ${{ secrets.REDIS_PORT }}
 
       - name: Set up Docker QEMU(Quick Emulator)
         uses: docker/setup-qemu-action@v3
