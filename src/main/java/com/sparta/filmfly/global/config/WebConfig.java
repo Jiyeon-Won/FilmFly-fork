@@ -28,8 +28,8 @@ public class WebConfig implements WebMvcConfigurer {
                 "https://api.filmfly.shop"
             )
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
-            .allowedHeaders("Content-Type", "Authorization", "Accept")
-            .allowedHeaders("Set-Cookie")
+//            .allowedHeaders("Content-Type", "Authorization", "Accept", "Set-Cookie")
+            .allowedHeaders("*")
             .allowCredentials(true)
             .maxAge(3600);
     }
