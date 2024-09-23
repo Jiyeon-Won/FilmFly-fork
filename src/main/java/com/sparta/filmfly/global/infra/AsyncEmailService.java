@@ -1,5 +1,6 @@
 package com.sparta.filmfly.global.infra;
 
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
@@ -15,7 +16,7 @@ public class AsyncEmailService {
     private final JavaMailSender mailSender;
 
     @Async
-    public void sendEmail(String to, String subject, String text) {
+    public CompletableFuture<Boolean> sendEmail(String to, String subject, String text) {
         try {
             SimpleMailMessage msg = new SimpleMailMessage();
             msg.setTo(to);
@@ -23,8 +24,9 @@ public class AsyncEmailService {
             msg.setText(text);
 
             mailSender.send(msg);
+            return CompletableFuture.completedFuture(true);
         } catch (Exception e) {
-            log.error("이메일 전송 실패: {}", to, e);
+            return CompletableFuture.completedFuture(false);
         }
     }
 }

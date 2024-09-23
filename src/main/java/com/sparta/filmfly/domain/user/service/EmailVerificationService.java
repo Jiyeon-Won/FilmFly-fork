@@ -3,18 +3,18 @@ package com.sparta.filmfly.domain.user.service;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
+import com.sparta.filmfly.global.exception.custom.detail.AsyncException;
 import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
 import com.sparta.filmfly.global.exception.custom.detail.LimitedException;
 import com.sparta.filmfly.global.infra.AsyncEmailService;
 import com.sparta.filmfly.global.infra.RedisService;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +61,7 @@ public class EmailVerificationService {
 
         // 이메일 발송
         String emailText = "이메일 인증 코드는 다음과 같습니다: " + verificationCode;
-        asyncEmailService.sendEmail(email, "이메일 인증 코드", emailText);
+        this.sendEmail(email, emailText);
 
         // 인증 상태 초기화 (아직 인증되지 않음)
         String verificationStatusKey = email + ":verified";
@@ -92,6 +92,20 @@ public class EmailVerificationService {
         if (isVerified == null || !isVerified) {
             throw new AccessDeniedException(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
         }
+    }
+
+    private void sendEmail(String email, String emailText) {
+        asyncEmailService.sendEmail(email, "이메일 인증 코드", emailText)
+            .thenAccept(isEmailSent -> {
+                if (Boolean.FALSE.equals(isEmailSent)) {
+                    log.error("이메일 전송 실패: {}", email);
+                    throw new AsyncException(ResponseCodeEnum.EMAIL_VERIFICATION_SEND_FAILED);
+                }
+            })
+            .exceptionally(ex -> {
+                log.error("이메일 전송 중 예외 발생: {}", email, ex);
+                throw new AsyncException(ResponseCodeEnum.EMAIL_VERIFICATION_SEND_FAILED);
+            });
     }
 
     private String generateVerificationCode() {
