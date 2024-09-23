@@ -3,17 +3,18 @@ package com.sparta.filmfly.domain.user.service;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.AccessDeniedException;
+import com.sparta.filmfly.global.exception.custom.detail.AsyncException;
 import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
 import com.sparta.filmfly.global.exception.custom.detail.LimitedException;
+import com.sparta.filmfly.global.infra.AsyncEmailService;
 import com.sparta.filmfly.global.infra.RedisService;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +22,8 @@ import java.util.UUID;
 public class EmailVerificationService {
 
     private final RedisService redisService;
-    private final JavaMailSender mailSender;
     private final UserRepository userRepository;
+    private final AsyncEmailService asyncEmailService;
 
     private static final long EXPIRATION_TIME = 3 * 60; // 3분 (180초)
     private static final long SEND_LIMIT_RESET_TIME = 60 * 60; // 1시간 (3600초)
@@ -59,20 +60,12 @@ public class EmailVerificationService {
         redisService.set(sendCountKey, sendCount, SEND_LIMIT_RESET_TIME, TimeUnit.SECONDS);
 
         // 이메일 발송
-        sendEmail(email, "이메일 인증 코드는 다음과 같습니다: " + verificationCode);
+        String emailText = "이메일 인증 코드는 다음과 같습니다: " + verificationCode;
+        this.sendEmail(email, emailText);
 
         // 인증 상태 초기화 (아직 인증되지 않음)
         String verificationStatusKey = email + ":verified";
         redisService.set(verificationStatusKey, false, 10, TimeUnit.MINUTES);
-    }
-
-    private void sendEmail(String to, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject("이메일 인증 코드");
-        message.setText(text);
-
-        mailSender.send(message);
     }
 
     public void verifyEmailCode(String email, String code) {
@@ -99,6 +92,20 @@ public class EmailVerificationService {
         if (isVerified == null || !isVerified) {
             throw new AccessDeniedException(ResponseCodeEnum.EMAIL_VERIFICATION_REQUIRED);
         }
+    }
+
+    private void sendEmail(String email, String emailText) {
+        asyncEmailService.sendEmail(email, "이메일 인증 코드", emailText)
+            .thenAccept(isEmailSent -> {
+                if (Boolean.FALSE.equals(isEmailSent)) {
+                    log.error("이메일 전송 실패: {}", email);
+                    throw new AsyncException(ResponseCodeEnum.EMAIL_VERIFICATION_SEND_FAILED);
+                }
+            })
+            .exceptionally(ex -> {
+                log.error("이메일 전송 중 예외 발생: {}", email, ex);
+                throw new AsyncException(ResponseCodeEnum.EMAIL_VERIFICATION_SEND_FAILED);
+            });
     }
 
     private String generateVerificationCode() {

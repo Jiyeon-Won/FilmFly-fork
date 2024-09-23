@@ -36,6 +36,7 @@ public enum ResponseCodeEnum {
     EMAIL_VERIFICATION_EXPIRED(HttpStatus.BAD_REQUEST, "이메일 인증 코드가 만료되었습니다."),
     EMAIL_RESEND_LIMIT(HttpStatus.BAD_REQUEST, "한 시간내에 5회 까지만 요청이 가능합니다"),
     EMAIL_VERIFICATION_TOKEN_MISMATCH(HttpStatus.BAD_REQUEST, "인증번호가 일치하지 않습니다."),
+    EMAIL_VERIFICATION_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 인증번호 전송에 실패했습니다."),
 
     // Report
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "신고내용을 찾을 수 없습니다."),
