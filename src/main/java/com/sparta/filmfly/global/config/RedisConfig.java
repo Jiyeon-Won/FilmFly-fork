@@ -16,12 +16,12 @@ public class RedisConfig {
     @Value("${redis.host}")
     private String redisHost;
 
-    @Value("${redis.port}")
-    private int redisPort;
+//    @Value("${redis.port}")
+//    private int redisPort;
 
     @Bean
     public LettuceConnectionFactory lettuceConnectionFactory() {
-        return new LettuceConnectionFactory(redisHost, redisPort);
+        return new LettuceConnectionFactory(redisHost, 6379);
     }
 
     @Bean
