@@ -108,7 +108,7 @@ jobs:
             echo "TMDB_API_AUTHORIZATION=${{ secrets.TMDB_API_AUTHORIZATION }}" >> filmfly.env
             echo "REDIS_HOST=redis" >> filmfly.env
             echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> filmfly.env
-            scp filmfly.env ubuntu@${{ secrets.LIVE_SERVER_IP }}:/home/ubuntu/
+            scp -o StrictHostKeyChecking=no filmfly.env ubuntu@${{ secrets.LIVE_SERVER_IP }}:/home/ubuntu/
 
       - name: Docker compose
         uses: appleboy/ssh-action@master
