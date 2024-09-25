@@ -65,7 +65,6 @@ public class EmailVerificationService {
         // 이메일 발송
         String emailText = "이메일 인증 코드는 다음과 같습니다: " + verificationCode;
         this.sendEmail(email, emailText);
-//        this.sendEmailSync(email, emailText);
 
         // 인증 상태 초기화 (아직 인증되지 않음)
         String verificationStatusKey = email + ":verified";
@@ -108,15 +107,6 @@ public class EmailVerificationService {
             .exceptionally(ex -> {
                 throw new AsyncException(ResponseCodeEnum.EMAIL_VERIFICATION_SEND_FAILED);
             });
-    }
-
-    private void sendEmailSync(String email, String emailText) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("이메일 인증 코드");
-        message.setText(emailText);
-
-        mailSender.send(message);
     }
 
     private String generateVerificationCode() {

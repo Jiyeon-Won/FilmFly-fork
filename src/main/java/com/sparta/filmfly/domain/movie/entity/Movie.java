@@ -19,8 +19,7 @@ public class Movie {
     private List<Integer> genreIds;
     private String originalLanguage;
     private String originalTitle;
-    @Lob    // 대용량 객체로 전환 : DB 에선 TEXT 타입으로 저장
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String overview;
     private double popularity;
     private String posterPath;
