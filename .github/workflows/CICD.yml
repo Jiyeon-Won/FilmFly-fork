@@ -71,7 +71,7 @@ jobs:
             echo "TARGET_UPSTREAM=blue" >> $GITHUB_ENV
           fi
 
-      - name: Set filmfly.env file
+      - name: Set .env file
         uses: appleboy/ssh-action@master
         with:
           username: ubuntu
