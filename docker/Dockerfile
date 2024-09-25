@@ -7,4 +7,4 @@ ARG ENV
 WORKDIR /apps
 COPY ${JAR_FILE} /apps/app.jar
 
-ENTRYPOINT ["sh", "-c", "exec java ${JAVA_OPTS} -jar /apps/app.jar -Dspring.profiles.active=${PROFILES} -Dserver.env=${ENV}"]
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /apps/app.jar -Dspring.profiles.active=$PROFILES -Dserver.env=$ENV"]
