@@ -68,7 +68,7 @@ server:
 
 logging.level:
   root: info
-  org.hibernate.SQL: debug
+  org.hibernate.SQL: info
 #  org.springframework.security: debug
 #  org.springframework.web: debug
 
@@ -115,8 +115,8 @@ spring:
   jpa:
     properties:
       hibernate:
-        show_sql: false
-        format_sql: false
+        show_sql: true
+        format_sql: true
         connection:
           CharSet: utf-8
           characterEncoding: utf-8

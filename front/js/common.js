@@ -57,14 +57,12 @@ $(function () {
                 return false;
             }
 
-            console.log('Check login status:', isLoggedIn);
             return isLoggedIn;
         }
 
         // 로그인 상태에 따라 버튼 표시
         function updateAuthLinks() {
             const userRole = localStorage.getItem('userRole');
-            console.log('User role:', userRole);
             if (checkLoginStatus()) {
                 $('#loginLink').hide();
                 $('#signupLink').hide();
