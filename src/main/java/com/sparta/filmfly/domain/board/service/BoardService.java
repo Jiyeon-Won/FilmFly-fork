@@ -75,15 +75,15 @@ public class BoardService {
     /**
      * 보드 페이징 조회
      */
-    public PageResponseDto<List<BoardPageDto>> getPageBoard(Long filterGoodCount, Long filterHits, String search, Pageable pageable) {
+    public PageResponseDto<BoardPageDto> getPageBoard(Long filterGoodCount, Long filterHits, String search, Pageable pageable) {
         return boardRepository.findAllWithFilters(pageable, filterGoodCount, filterHits, search);
     }
 
     /**
      * 유저의 보드 조회
      */
-    public PageResponseDto<List<BoardPageDto>> getUsersBoard(UserDetailsImpl userDetails, Long userId, Pageable pageable) {
-        PageResponseDto<List<BoardPageDto>> pageBoard = boardRepository.findAllByUserId(userId, pageable);
+    public PageResponseDto<BoardPageDto> getUsersBoard(UserDetailsImpl userDetails, Long userId, Pageable pageable) {
+        PageResponseDto<BoardPageDto> pageBoard = boardRepository.findAllByUserId(userId, pageable);
 
         if (userDetails != null) {
             List<BoardPageDto> boards = pageBoard.getData();

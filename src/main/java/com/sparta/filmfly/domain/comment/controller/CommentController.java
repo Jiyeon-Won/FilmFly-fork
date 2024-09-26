@@ -57,7 +57,7 @@ public class CommentController {
      * http://localhost:8080/boards/{boardId}/comments?page=1&size=10
      */
     @GetMapping("/boards/{boardId}/comments")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<CommentResponseDto>>>> gerPageComment(
+    public ResponseEntity<DataResponseDto<PageResponseDto<CommentResponseDto>>> gerPageComment(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @PathVariable Long boardId,
         @RequestParam(required = false, defaultValue = "1") int page,
@@ -66,7 +66,7 @@ public class CommentController {
         @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<CommentResponseDto>> responseDto = commentService.gerPageComment(userDetails, boardId, pageable);
+        PageResponseDto<CommentResponseDto> responseDto = commentService.gerPageComment(userDetails, boardId, pageable);
         return ResponseUtils.success(responseDto);
     }
 
@@ -74,7 +74,7 @@ public class CommentController {
      * 유저의 댓글 목록
      */
     @GetMapping("/comments/users/{userId}")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<CommentResponseDto>>>> getUsersComments(
+    public ResponseEntity<DataResponseDto<PageResponseDto<CommentResponseDto>>> getUsersComments(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @PathVariable Long userId,
         @RequestParam(required = false, defaultValue = "1") int page,
@@ -83,7 +83,7 @@ public class CommentController {
         @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<CommentResponseDto>> responseDto = commentService.getUsersComments(userDetails, userId, pageable);
+        PageResponseDto<CommentResponseDto> responseDto = commentService.getUsersComments(userDetails, userId, pageable);
         return ResponseUtils.success(responseDto);
     }
 

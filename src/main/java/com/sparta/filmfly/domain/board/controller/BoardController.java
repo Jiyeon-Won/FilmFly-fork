@@ -55,7 +55,7 @@ public class BoardController {
      * http://localhost:8080/boards?page=1&filterGoodCount=0&filterHits=0&search=제목
      */
     @GetMapping
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<BoardPageDto>>>> getPageBoard(
+    public ResponseEntity<DataResponseDto<PageResponseDto<BoardPageDto>>> getPageBoard(
         @RequestParam(required = false, defaultValue = "1") int page,
         @RequestParam(required = false, defaultValue = "10") int size,
         @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
@@ -65,7 +65,7 @@ public class BoardController {
         @RequestParam(value = "search", required = false) final String search
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<BoardPageDto>>  responseDto = boardService.getPageBoard(filterGoodCount,filterHits,search,pageable);
+        PageResponseDto<BoardPageDto>  responseDto = boardService.getPageBoard(filterGoodCount,filterHits,search,pageable);
         return ResponseUtils.success(responseDto);
     }
 
@@ -73,7 +73,7 @@ public class BoardController {
      * 유저의 보드 목록
      */
     @GetMapping("/users/{userId}")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<BoardPageDto>>>> getUsersBoard(
+    public ResponseEntity<DataResponseDto<PageResponseDto<BoardPageDto>>> getUsersBoard(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @PathVariable Long userId,
         @RequestParam(required = false, defaultValue = "1") int page,
@@ -82,7 +82,7 @@ public class BoardController {
         @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<BoardPageDto>> responseDto = boardService.getUsersBoard(userDetails, userId, pageable);
+        PageResponseDto<BoardPageDto> responseDto = boardService.getUsersBoard(userDetails, userId, pageable);
         return ResponseUtils.success(responseDto);
     }
 

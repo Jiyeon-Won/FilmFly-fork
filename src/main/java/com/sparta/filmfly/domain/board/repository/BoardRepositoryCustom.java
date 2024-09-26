@@ -11,8 +11,8 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface BoardRepositoryCustom {
-    PageResponseDto<List<BoardPageDto>> findAllWithFilters(Pageable pageable, Long filterGoodCount, Long filterHits, String search);
-    PageResponseDto<List<BoardPageDto>> findAllByUserId(Long userId,Pageable pageable);
+    PageResponseDto<BoardPageDto> findAllWithFilters(Pageable pageable, Long filterGoodCount, Long filterHits, String search);
+    PageResponseDto<BoardPageDto> findAllByUserId(Long userId,Pageable pageable);
 
     BoardResponseDto getBoard(Long boardId);
 

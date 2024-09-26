@@ -1,7 +1,6 @@
 package com.sparta.filmfly.domain.movie.controller;
 
 import com.sparta.filmfly.domain.movie.dto.*;
-import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.entity.OriginLanguageEnum;
 import com.sparta.filmfly.domain.movie.service.MovieService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
@@ -13,8 +12,6 @@ import com.sparta.filmfly.global.util.PageUtils;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,7 +22,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -82,7 +78,7 @@ public class MovieController {
     * 영화 검색 (페이징)
     */
     @GetMapping("/movies")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<MovieReactionsResponseDto>>>> getListMovie(
+    public ResponseEntity<DataResponseDto<PageResponseDto<MovieReactionsResponseDto>>> getListMovie(
         @RequestParam(required = false, defaultValue = "1") int page,
         @RequestParam(required = false, defaultValue = "12") int size,
         @RequestParam(required = false, defaultValue = "id") String sortBy,
@@ -99,7 +95,7 @@ public class MovieController {
 
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
 
-        PageResponseDto<List<MovieReactionsResponseDto>> responseDto = movieService.getPageMovieBySearchCond(
+        PageResponseDto<MovieReactionsResponseDto> responseDto = movieService.getPageMovieBySearchCond(
             movieSearchCond, pageable
         );
         return ResponseUtils.success(responseDto);
@@ -109,7 +105,7 @@ public class MovieController {
      * 최신 인기 영화
      */
     @GetMapping("/movies/trend")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<MovieResponseDto>>>> getMovieList(
+    public ResponseEntity<DataResponseDto<PageResponseDto<MovieResponseDto>>> getMovieList(
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size,
         @RequestParam(defaultValue = "id") String sortBy,
@@ -117,23 +113,9 @@ public class MovieController {
     ) {
             Sort sort = isAsc ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
             Pageable pageable = PageRequest.of(page-1, size, sort);
-            Page<Movie> moviePage = movieService.getMovieTrendList(pageable);
+        PageResponseDto<MovieResponseDto> responseDto = movieService.getMovieTrendList(pageable);
 
-        return getDataResponseDtoResponseEntity(moviePage);
-    }
-
-    @NotNull
-    private ResponseEntity<DataResponseDto<PageResponseDto<List<MovieResponseDto>>>> getDataResponseDtoResponseEntity(Page<Movie> moviePage) {
-        PageResponseDto<List<MovieResponseDto>> response = PageResponseDto.<List<MovieResponseDto>>builder()
-                .data(moviePage.getContent().stream()
-                        .map(MovieResponseDto::fromEntity)
-                        .collect(Collectors.toList()))
-                .totalElements(moviePage.getTotalElements())
-                .totalPages(moviePage.getTotalPages())
-                .currentPage(moviePage.getNumber() + 1)
-                .pageSize(moviePage.getSize())
-                .build();
-        return ResponseUtils.success(response);
+        return ResponseUtils.success(responseDto);
     }
 
     /**

@@ -9,11 +9,11 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface BadRepositoryCustom {
-    PageResponseDto<List<ReactionMovieResponseDto>> getPageMovieByUserBad(Long userId, Pageable pageable);
+    PageResponseDto<ReactionMovieResponseDto> getPageMovieByUserBad(Long userId, Pageable pageable);
 
-    PageResponseDto<List<ReactionReviewResponseDto>> getPageReviewByUserBad(Long userId, Pageable pageable);
+    PageResponseDto<ReactionReviewResponseDto> getPageReviewByUserBad(Long userId, Pageable pageable);
 
-    PageResponseDto<List<ReactionBoardResponseDto>> getPageBoardByUserBad(Long userId, Pageable pageable);
+    PageResponseDto<ReactionBoardResponseDto> getPageBoardByUserBad(Long userId, Pageable pageable);
 
-    PageResponseDto<List<ReactionCommentResponseDto>> getPageCommentByUserBad(Long userId, Pageable pageable);
+    PageResponseDto<ReactionCommentResponseDto> getPageCommentByUserBad(Long userId, Pageable pageable);
 }

@@ -31,7 +31,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public PageResponseDto<List<BoardPageDto>> findAllWithFilters(Pageable pageable, Long filterGoodCount, Long filterHits, String search) {
+    public PageResponseDto<BoardPageDto> findAllWithFilters(Pageable pageable, Long filterGoodCount, Long filterHits, String search) {
         QBoard board = QBoard.board;
         QGood good = QGood.good;
         QBad bad = QBad.bad;
@@ -79,18 +79,12 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         PageImpl<BoardPageDto> page = new PageImpl<>(content, pageable, total);
 
         // PageResponseDto 반환합니다.
-        return PageResponseDto.<List<BoardPageDto>>builder()
-            .totalElements(page.getTotalElements())
-            .totalPages(page.getTotalPages())
-            .currentPage(page.getNumber() + 1)
-            .pageSize(page.getSize())
-            .data(content)
-            .build();
+        return PageResponseDto.of(page);
     }
 
 
     @Override
-    public PageResponseDto<List<BoardPageDto>> findAllByUserId(Long userId, Pageable pageable) {
+    public PageResponseDto<BoardPageDto> findAllByUserId(Long userId, Pageable pageable) {
         QBoard board = QBoard.board;
         QGood good = QGood.good;
         QBad bad = QBad.bad;
@@ -122,13 +116,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         PageImpl<BoardPageDto> page = new PageImpl<>(content, pageable, total);
 
         // PageResponseDto 반환합니다.
-        return PageResponseDto.<List<BoardPageDto>>builder()
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .currentPage(page.getNumber() + 1)
-                .pageSize(page.getSize())
-                .data(content)
-                .build();
+        return PageResponseDto.of(page);
     }
 
     @Override

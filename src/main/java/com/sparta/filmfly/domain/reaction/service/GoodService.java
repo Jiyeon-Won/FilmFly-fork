@@ -107,28 +107,28 @@ public class GoodService {
     /**
      * 사용자가 좋아요를 누른 영화 조회
      */
-    public PageResponseDto<List<ReactionMovieResponseDto>> getPageGoodMovie(Long userId, Pageable pageable) {
+    public PageResponseDto<ReactionMovieResponseDto> getPageGoodMovie(Long userId, Pageable pageable) {
         return goodRepository.getPageMovieByUserGood(userId, pageable);
     }
 
     /**
      * 사용자가 좋아요를 누른 리뷰 조회
      */
-    public PageResponseDto<List<ReactionReviewResponseDto>> getPageGoodReview(Long userId, Pageable pageable) {
+    public PageResponseDto<ReactionReviewResponseDto> getPageGoodReview(Long userId, Pageable pageable) {
         return goodRepository.getPageReviewByUserGood(userId, pageable);
     }
 
     /**
      * 사용자가 좋아요를 누른 게시물 조회
      */
-    public PageResponseDto<List<ReactionBoardResponseDto>> getPageGoodBoard(Long userId, Pageable pageable) {
+    public PageResponseDto<ReactionBoardResponseDto> getPageGoodBoard(Long userId, Pageable pageable) {
         return goodRepository.getPageBoardByUserGood(userId, pageable);
     }
 
     /**
      * 사용자가 좋아요를 누른 댓글 조회
      */
-    public PageResponseDto<List<ReactionCommentResponseDto>> getPageGoodComment(Long userId, Pageable pageable) {
+    public PageResponseDto<ReactionCommentResponseDto> getPageGoodComment(Long userId, Pageable pageable) {
         return goodRepository.getPageCommentByUserGood(userId, pageable);
     }
 }

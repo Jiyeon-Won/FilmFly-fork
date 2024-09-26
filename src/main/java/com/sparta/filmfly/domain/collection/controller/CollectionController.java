@@ -66,7 +66,7 @@ public class CollectionController {
      * 유저의 보관함 목록
      */
     @GetMapping("/users/{userId}")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<CollectionResponseDto>>>> getUsersCollections(
+    public ResponseEntity<DataResponseDto<PageResponseDto<CollectionResponseDto>>> getUsersCollections(
             @PathVariable Long userId,
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size,
@@ -74,7 +74,7 @@ public class CollectionController {
             @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<CollectionResponseDto>> responseDto = collectionService.getUsersCollections(userId,pageable);
+        PageResponseDto<CollectionResponseDto> responseDto = collectionService.getUsersCollections(userId,pageable);
         return ResponseUtils.success(responseDto);
     }
 
@@ -82,7 +82,7 @@ public class CollectionController {
      * 보관함 상세 조회 _ 영화 목록 조회
      */
     @GetMapping("/{collectionId}/movies")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<MovieResponseDto>>>> getMovieCollection(
+    public ResponseEntity<DataResponseDto<PageResponseDto<MovieResponseDto>>> getMovieCollection(
             @PathVariable Long collectionId,
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "9") int size,
@@ -90,7 +90,7 @@ public class CollectionController {
             @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<MovieResponseDto>> movieCollectionResponseDto = collectionService.getMovieCollection(collectionId,pageable);
+        PageResponseDto<MovieResponseDto> movieCollectionResponseDto = collectionService.getMovieCollection(collectionId,pageable);
         return ResponseUtils.success(movieCollectionResponseDto);
     }
 

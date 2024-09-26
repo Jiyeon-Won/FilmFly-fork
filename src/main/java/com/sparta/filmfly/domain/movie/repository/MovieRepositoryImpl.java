@@ -6,7 +6,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.filmfly.domain.favorite.entity.QFavorite;
 import com.sparta.filmfly.domain.movie.dto.CreditSimpleResponseDto;
-import com.sparta.filmfly.domain.movie.dto.MovieCreditResponseDto;
 import com.sparta.filmfly.domain.movie.dto.MovieDetailSimpleResponseDto;
 import com.sparta.filmfly.domain.movie.dto.MovieReactionCheckResponseDto;
 import com.sparta.filmfly.domain.movie.dto.MovieReactionsResponseDto;
@@ -20,7 +19,6 @@ import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;
 import com.sparta.filmfly.domain.user.entity.User;
-import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
 import java.time.LocalDate;
 import java.util.List;
@@ -56,7 +54,7 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
      * 영화 조회 (페이징)
      */
     @Override
-    public PageResponseDto<List<MovieReactionsResponseDto>> getPageMovieBySearchCond(
+    public PageResponseDto<MovieReactionsResponseDto> getPageMovieBySearchCond(
         MovieSearchCond searchOptions, Pageable pageable
     ) {
         QMovie qMovie = QMovie.movie;
@@ -74,10 +72,12 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
                 qBad.id.countDistinct().as("badCount")
             ))
             .from(qMovie)
-            .leftJoin(qGood).on(qGood.type.eq(ReactionContentTypeEnum.MOVIE)
-                .and(qGood.typeId.eq(qMovie.id)))
-            .leftJoin(qBad).on(qBad.type.eq(ReactionContentTypeEnum.MOVIE)
-                .and(qBad.typeId.eq(qMovie.id)))
+            .leftJoin(qGood).on(qGood.typeId.eq(qMovie.id)
+                .and(qGood.type.eq(ReactionContentTypeEnum.MOVIE))
+            )
+            .leftJoin(qBad).on(qBad.typeId.eq(qMovie.id)
+                .and(qBad.type.eq(ReactionContentTypeEnum.MOVIE))
+            )
             .where(searchPredicate(searchOptions))
             .groupBy(qMovie.id)
             .offset(pageable.getOffset())
@@ -92,13 +92,7 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
 
         PageImpl<MovieReactionsResponseDto> page = new PageImpl<>(fetch, pageable, total);
 
-        return PageResponseDto.<List<MovieReactionsResponseDto>>builder()
-            .totalElements(page.getTotalElements())
-            .totalPages(page.getTotalPages())
-            .currentPage(page.getNumber() + 1)
-            .pageSize(page.getSize())
-            .data(page.getContent())
-            .build();
+        return PageResponseDto.of(page);
     }
 
     /**

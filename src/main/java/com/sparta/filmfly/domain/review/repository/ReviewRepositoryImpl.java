@@ -37,7 +37,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
      * 특정 영화에 대한 리뷰 전체 조회
      */
     @Override
-    public PageResponseDto<List<ReviewResponseDto>> getPageReviewByMovieId(Long movieId, Pageable pageable) {
+    public PageResponseDto<ReviewResponseDto> getPageReviewByMovieId(Long movieId, Pageable pageable) {
         QReview qReview = QReview.review;
         QGood qGood = QGood.good;
         QBad qBad = QBad.bad;
@@ -77,20 +77,14 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
         PageImpl<ReviewResponseDto> page = new PageImpl<>(fetch, pageable, total);
 
-        return PageResponseDto.<List<ReviewResponseDto>>builder()
-            .totalElements(page.getTotalElements())
-            .totalPages(page.getTotalPages())
-            .currentPage(page.getNumber() + 1)
-            .pageSize(page.getSize())
-            .data(fetch)
-            .build();
+        return PageResponseDto.of(page);
     }
 
     /**
      * 유저의 리뷰 목록
      */
     @Override
-    public PageResponseDto<List<ReviewUserResponseDto>> getPageReviewByUserId(Long userId, Pageable pageable) {
+    public PageResponseDto<ReviewUserResponseDto> getPageReviewByUserId(Long userId, Pageable pageable) {
         QReview qReview = QReview.review;
         QGood qGood = QGood.good;
         QBad qBad = QBad.bad;
@@ -131,13 +125,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
         PageImpl<ReviewUserResponseDto> page = new PageImpl<>(fetch, pageable, total);
 
-        return PageResponseDto.<List<ReviewUserResponseDto>>builder()
-            .totalElements(page.getTotalElements())
-            .totalPages(page.getTotalPages())
-            .currentPage(page.getNumber() + 1)
-            .pageSize(page.getSize())
-            .data(fetch)
-            .build();
+        return PageResponseDto.of(page);
     }
 
     /**
@@ -159,64 +147,6 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         }
 
         return Math.round(averageRating * 10) / 10.0f;
-    }
-
-
-    /**
-     * 최신 리뷰 목록
-     */
-    @Override
-    public PageResponseDto<List<ReviewUserResponseDto>> getPageReview(Pageable pageable) {
-        QReview qReview = QReview.review;
-        QGood qGood = QGood.good;
-        QBad qBad = QBad.bad;
-
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime oneMonthAgo = now.minusMonths(1);
-
-        List<ReviewUserResponseDto> fetch = queryFactory.select(Projections.constructor(
-                ReviewUserResponseDto.class,
-                qReview.id,
-                qReview.user.id,
-                qReview.movie.id,
-                qReview.movie.title,
-                qReview.user.nickname,
-                qReview.user.pictureUrl,
-                qReview.rating,
-                qReview.title,
-                qReview.content,
-                qReview.createdAt,
-//                추후 좋아요, 싫어요 숫자에 문제가 생기면 count()를 countDistinct()로 바꿔보기
-                qGood.id.count().as("goodCount"),
-                qBad.id.count().as("badCount")
-            ))
-            .from(qReview)
-            .leftJoin(qGood).on(qGood.type.eq(ReactionContentTypeEnum.REVIEW)
-                .and(qGood.typeId.eq(qReview.id)))
-            .leftJoin(qBad).on(qBad.type.eq(ReactionContentTypeEnum.REVIEW)
-                .and(qBad.typeId.eq(qReview.id)))
-            .where(qReview.createdAt.after(oneMonthAgo))
-            .groupBy(qReview.id)
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .orderBy(qReview.createdAt.desc())
-            .fetch();
-
-        Long total = queryFactory
-            .select(qReview.count())
-            .from(qReview)
-            .where(qReview.createdAt.after(oneMonthAgo))
-            .fetchOne();
-
-        PageImpl<ReviewUserResponseDto> page = new PageImpl<>(fetch, pageable, total);
-
-        return PageResponseDto.<List<ReviewUserResponseDto>>builder()
-            .totalElements(page.getTotalElements())
-            .totalPages(page.getTotalPages())
-            .currentPage(page.getNumber() + 1)
-            .pageSize(page.getSize())
-            .data(fetch)
-            .build();
     }
 
     /**
@@ -261,7 +191,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
     }
 
     @Override
-    public PageResponseDto<List<ReviewResponseDto>> findAllWithFilters(Pageable pageable, Long filterGoodCount, String search) {
+    public PageResponseDto<ReviewResponseDto> findAllWithFilters(Pageable pageable, Long filterGoodCount, String search) {
         QReview review = QReview.review;
         QGood good = QGood.good;
         QBad bad = QBad.bad;
@@ -309,12 +239,6 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         PageImpl<ReviewResponseDto> page = new PageImpl<>(content, pageable, total);
 
         // PageResponseDto 반환합니다.
-        return PageResponseDto.<List<ReviewResponseDto>>builder()
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .currentPage(page.getNumber() + 1)
-                .pageSize(page.getSize())
-                .data(content)
-                .build();
+        return PageResponseDto.of(page);
     }
 }

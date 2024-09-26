@@ -29,7 +29,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public PageResponseDto<List<CommentResponseDto>> findAllByBoardIdWithReactions(Long boardId, Pageable pageable) {
+    public PageResponseDto<CommentResponseDto> findAllByBoardIdWithReactions(Long boardId, Pageable pageable) {
         QComment comment = QComment.comment;
         QGood good = QGood.good;
         QBad bad = QBad.bad;
@@ -77,17 +77,11 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
         PageImpl<CommentResponseDto> page = new PageImpl<>(fetch, pageable, total);
 
         // PageResponseDto 반환합니다.
-        return PageResponseDto.<List<CommentResponseDto>>builder()
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .currentPage(page.getNumber() + 1)
-                .pageSize(page.getSize())
-                .data(page.getContent())
-                .build();
+        return PageResponseDto.of(page);
     }
 
     @Override
-    public PageResponseDto<List<CommentResponseDto>> findAllByUserId(Long userId, Pageable pageable) {
+    public PageResponseDto<CommentResponseDto> findAllByUserId(Long userId, Pageable pageable) {
         QComment comment = QComment.comment;
         QGood good = QGood.good;
         QBad bad = QBad.bad;
@@ -120,13 +114,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
         PageImpl<CommentResponseDto> page = new PageImpl<>(content, pageable, total);
 
         // PageResponseDto 반환합니다.
-        return PageResponseDto.<List<CommentResponseDto>>builder()
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .currentPage(page.getNumber() + 1)
-                .pageSize(page.getSize())
-                .data(content)
-                .build();
+        return PageResponseDto.of(page);
     }
 
     @Override

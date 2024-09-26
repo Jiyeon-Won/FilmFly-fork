@@ -100,10 +100,10 @@ public class CollectionService {
     /**
      * 유저의 보관함 목록
      */
-    public PageResponseDto<List<CollectionResponseDto>> getUsersCollections(Long userId, Pageable pageable) {
+    public PageResponseDto<CollectionResponseDto> getUsersCollections(Long userId, Pageable pageable) {
         Page<Collection> collectionList = collectionRepository.findAllByUserId(userId,pageable);
 
-        return PageResponseDto.<List<CollectionResponseDto>>builder()
+        return PageResponseDto.<CollectionResponseDto>builder()
                 .totalElements(collectionList.getTotalElements())
                 .totalPages(collectionList.getTotalPages())
                 .currentPage(collectionList.getNumber() + 1)
@@ -178,7 +178,7 @@ public class CollectionService {
         movieCollectionRepository.save(movieCollection);
     }
 
-    public PageResponseDto<List<MovieResponseDto>> getMovieCollection(Long collectionId,Pageable pageable) {
+    public PageResponseDto<MovieResponseDto> getMovieCollection(Long collectionId,Pageable pageable) {
         // 보관함 여부 확인
         Collection collection = collectionRepository.findByIdOrElseThrow(collectionId);
         // 보관함 주인 확인
@@ -192,7 +192,7 @@ public class CollectionService {
             movieResponseDtoList.add(movieResponseDto);
         }
 
-        return PageResponseDto.<List<MovieResponseDto>>builder()
+        return PageResponseDto.<MovieResponseDto>builder()
                 .totalElements(movieCollectionList.getTotalElements())
                 .totalPages(movieCollectionList.getTotalPages())
                 .currentPage(movieCollectionList.getNumber() + 1)

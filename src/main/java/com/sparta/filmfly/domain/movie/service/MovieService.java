@@ -66,14 +66,22 @@ public class MovieService {
     /**
      * 영화 검색 (페이징)
      */
-    public PageResponseDto<List<MovieReactionsResponseDto>> getPageMovieBySearchCond(
+    public PageResponseDto<MovieReactionsResponseDto> getPageMovieBySearchCond(
         MovieSearchCond searchCond, Pageable pageable
     ) {
         return movieRepository.getPageMovieBySearchCond(searchCond, pageable);
     }
 
-    public Page<Movie> getMovieTrendList(Pageable pageable) {
-        return movieRepository.findAllByOrderByPopularityDesc(pageable);
+    public PageResponseDto<MovieResponseDto> getMovieTrendList(Pageable pageable) {
+        Page<Movie> trendMovies = movieRepository.findAllByOrderByPopularityDesc(pageable);
+
+        return PageResponseDto.<MovieResponseDto>builder()
+            .totalElements(trendMovies.getTotalElements())
+            .totalPages(trendMovies.getTotalPages())
+            .currentPage(trendMovies.getNumber() + 1)
+            .pageSize(trendMovies.getSize())
+            .data(trendMovies.stream().map(MovieResponseDto::fromEntity).toList())
+            .build();
     }
 
     @Transactional

@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public interface MovieRepositoryCustom {
     List<Movie> findByGenreIds(List<Integer> genreIds);
-    PageResponseDto<List<MovieReactionsResponseDto>> getPageMovieBySearchCond(MovieSearchCond searchOptions, Pageable pageable);
+    PageResponseDto<MovieReactionsResponseDto> getPageMovieBySearchCond(MovieSearchCond searchOptions, Pageable pageable);
     MovieDetailSimpleResponseDto getMovie(Long movieId);
     MovieReactionCheckResponseDto checkMovieReaction(User user, Long movieId);
 }

@@ -20,7 +20,7 @@ import java.util.Objects;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Collection extends TimeStampEntity {
-    private static final Logger log = LoggerFactory.getLogger(Collection.class);
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,9 +33,6 @@ public class Collection extends TimeStampEntity {
     private String name;
 
     private String content;
-
-    @OneToMany(mappedBy = "collection")
-    private List<MovieCollection> movieCollectionList;
 
     @Builder
     public Collection(User user, String name, String content) {

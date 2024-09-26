@@ -60,11 +60,11 @@ public class CommentService {
      * 댓글 페이지 조회
      */
     @Transactional(readOnly = true)
-    public PageResponseDto<List<CommentResponseDto>> gerPageComment(UserDetailsImpl userDetails, Long boardId, Pageable pageable) {
+    public PageResponseDto<CommentResponseDto> gerPageComment(UserDetailsImpl userDetails, Long boardId, Pageable pageable) {
         //정렬은 생성 시간, get으로 넘겨주는 댓글은 수정 시간
         boardRepository.existsByIdOrElseThrow(boardId); // 보드가 존재하지 않으면 에러
 
-        PageResponseDto<List<CommentResponseDto>> pageComments = commentRepository.findAllByBoardIdWithReactions(boardId, pageable);
+        PageResponseDto<CommentResponseDto> pageComments = commentRepository.findAllByBoardIdWithReactions(boardId, pageable);
         if (userDetails != null) {
             List<CommentResponseDto> comments = pageComments.getData();
             List<Long> commentIds = comments.stream().map(CommentResponseDto::getId).toList();
@@ -83,8 +83,8 @@ public class CommentService {
     /**
      * 유저의 댓글 조회
      */
-    public PageResponseDto<List<CommentResponseDto>> getUsersComments(UserDetailsImpl userDetails, Long userId, Pageable pageable) {
-        PageResponseDto<List<CommentResponseDto>> pageComment = commentRepository.findAllByUserId(userId, pageable);
+    public PageResponseDto<CommentResponseDto> getUsersComments(UserDetailsImpl userDetails, Long userId, Pageable pageable) {
+        PageResponseDto<CommentResponseDto> pageComment = commentRepository.findAllByUserId(userId, pageable);
 
         if (userDetails != null) {
             List<CommentResponseDto> comments = pageComment.getData();

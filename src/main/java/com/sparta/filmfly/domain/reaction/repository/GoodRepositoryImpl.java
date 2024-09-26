@@ -32,7 +32,7 @@ public class GoodRepositoryImpl implements GoodRepositoryCustom {
      * 사용자가 좋아요를 누른 영화 조회 (페이징)
      */
     @Override
-    public PageResponseDto<List<ReactionMovieResponseDto>> getPageMovieByUserGood(
+    public PageResponseDto<ReactionMovieResponseDto> getPageMovieByUserGood(
         Long userId, Pageable pageable
     ) {
         QMovie qMovie = QMovie.movie;
@@ -67,20 +67,14 @@ public class GoodRepositoryImpl implements GoodRepositoryCustom {
 
         PageImpl<ReactionMovieResponseDto> page = new PageImpl<>(fetch, pageable, total);
 
-        return PageResponseDto.<List<ReactionMovieResponseDto>>builder()
-            .totalElements(page.getTotalElements())
-            .totalPages(page.getTotalPages())
-            .currentPage(page.getNumber() + 1)
-            .pageSize(page.getSize())
-            .data(page.getContent())
-            .build();
+        return PageResponseDto.of(page);
     }
 
     /**
      * 사용자가 좋아요를 누른 리뷰 조회 (페이징)
      */
     @Override
-    public PageResponseDto<List<ReactionReviewResponseDto>> getPageReviewByUserGood(
+    public PageResponseDto<ReactionReviewResponseDto> getPageReviewByUserGood(
         Long userId, Pageable pageable
     ) {
         QMovie qMovie = QMovie.movie;
@@ -123,20 +117,14 @@ public class GoodRepositoryImpl implements GoodRepositoryCustom {
 
         PageImpl<ReactionReviewResponseDto> page = new PageImpl<>(fetch, pageable, total);
 
-        return PageResponseDto.<List<ReactionReviewResponseDto>>builder()
-            .totalElements(page.getTotalElements())
-            .totalPages(page.getTotalPages())
-            .currentPage(page.getNumber() + 1)
-            .pageSize(page.getSize())
-            .data(page.getContent())
-            .build();
+        return PageResponseDto.of(page);
     }
 
     /**
      * 사용자가 좋아요를 누른 게시물 조회 (페이징)
      */
     @Override
-    public PageResponseDto<List<ReactionBoardResponseDto>> getPageBoardByUserGood(
+    public PageResponseDto<ReactionBoardResponseDto> getPageBoardByUserGood(
         Long userId, Pageable pageable
     ) {
         QBoard qBoard = QBoard.board;
@@ -173,20 +161,14 @@ public class GoodRepositoryImpl implements GoodRepositoryCustom {
 
         PageImpl<ReactionBoardResponseDto> page = new PageImpl<>(fetch, pageable, total);
 
-        return PageResponseDto.<List<ReactionBoardResponseDto>>builder()
-            .totalElements(page.getTotalElements())
-            .totalPages(page.getTotalPages())
-            .currentPage(page.getNumber() + 1)
-            .pageSize(page.getSize())
-            .data(page.getContent())
-            .build();
+        return PageResponseDto.of(page);
     }
 
     /**
      * 사용자가 좋아요를 누른 댓글 조회 (페이징)
      */
     @Override
-    public PageResponseDto<List<ReactionCommentResponseDto>> getPageCommentByUserGood(
+    public PageResponseDto<ReactionCommentResponseDto> getPageCommentByUserGood(
         Long userId, Pageable pageable
     ) {
         QBoard qBoard = QBoard.board;
@@ -225,12 +207,6 @@ public class GoodRepositoryImpl implements GoodRepositoryCustom {
 
         PageImpl<ReactionCommentResponseDto> page = new PageImpl<>(fetch, pageable, total);
 
-        return PageResponseDto.<List<ReactionCommentResponseDto>>builder()
-            .totalElements(page.getTotalElements())
-            .totalPages(page.getTotalPages())
-            .currentPage(page.getNumber() + 1)
-            .pageSize(page.getSize())
-            .data(page.getContent())
-            .build();
+        return PageResponseDto.of(page);
     }
 }

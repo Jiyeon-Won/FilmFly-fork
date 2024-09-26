@@ -71,10 +71,10 @@ public class ReviewService {
      * 특정 영화에 대한 리뷰 전체 조회
      */
     @Transactional(readOnly = true)
-    public PageResponseDto<List<ReviewResponseDto>> getPageReview(UserDetailsImpl userDetails, Long movieId, Pageable pageable) {
+    public PageResponseDto<ReviewResponseDto> getPageReview(UserDetailsImpl userDetails, Long movieId, Pageable pageable) {
         movieRepository.existsByIdOrElseThrow(movieId);
 
-        PageResponseDto<List<ReviewResponseDto>> pageReview = reviewRepository.getPageReviewByMovieId(movieId, pageable);
+        PageResponseDto<ReviewResponseDto> pageReview = reviewRepository.getPageReviewByMovieId(movieId, pageable);
         if (userDetails != null) {
             List<ReviewResponseDto> reviews = pageReview.getData();
             List<Long> reviewIds = reviews.stream().map(ReviewResponseDto::getId).toList();
@@ -90,8 +90,8 @@ public class ReviewService {
      * 유저의 리뷰 목록
      */
     @Transactional(readOnly = true)
-    public PageResponseDto<List<ReviewUserResponseDto>> getUsersReviews(UserDetailsImpl userDetails, Long userId, Pageable pageable) {
-        PageResponseDto<List<ReviewUserResponseDto>> pageReview = reviewRepository.getPageReviewByUserId(userId, pageable);
+    public PageResponseDto<ReviewUserResponseDto> getUsersReviews(UserDetailsImpl userDetails, Long userId, Pageable pageable) {
+        PageResponseDto<ReviewUserResponseDto> pageReview = reviewRepository.getPageReviewByUserId(userId, pageable);
 
         if (userDetails != null) {
             List<ReviewUserResponseDto> reviews = pageReview.getData();
@@ -149,7 +149,7 @@ public class ReviewService {
      * 최신 리뷰 목록
      */
     @Transactional(readOnly = true)
-    public PageResponseDto<List<ReviewResponseDto>> getReviews(Long filterGoodCount, String search, Pageable pageable) {
+    public PageResponseDto<ReviewResponseDto> getReviews(Long filterGoodCount, String search, Pageable pageable) {
         return reviewRepository.findAllWithFilters(pageable, filterGoodCount, search);
     }
 }

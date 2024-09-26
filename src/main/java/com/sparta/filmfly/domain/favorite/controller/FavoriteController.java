@@ -42,14 +42,14 @@ public class FavoriteController {
     * 찜 조회하기
     */
     @GetMapping("/users/{userId}")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List< MovieResponseDto>>>> getPageFavorite(
+    public ResponseEntity<DataResponseDto<PageResponseDto<MovieResponseDto>>> getPageFavorite(
             @PathVariable Long userId,
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "9") int size,
             @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, "id", isAsc);
-        PageResponseDto<List< MovieResponseDto>> movieResponseDtoList = favoriteService.getPageFavorite(userId,pageable);
+        PageResponseDto<MovieResponseDto> movieResponseDtoList = favoriteService.getPageFavorite(userId,pageable);
         return ResponseUtils.success(movieResponseDtoList);
     }
 
