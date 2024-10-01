@@ -18,7 +18,17 @@ public abstract class CookieUtils {
     public static void addCookie(HttpServletResponse response, String name, String value, long maxAge) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
             .path("/")
-            .httpOnly(true)
+            .sameSite("None")
+            .secure(true)
+            .maxAge(maxAge)
+            .build();
+        response.addHeader("Set-Cookie", cookie.toString());
+    }
+
+    public static void addCookie(HttpServletResponse response, String name, String value, long maxAge, boolean isHttpOnly) {
+        ResponseCookie cookie = ResponseCookie.from(name, value)
+            .path("/")
+            .httpOnly(isHttpOnly)
             .sameSite("None")
             .secure(true)
             .maxAge(maxAge)

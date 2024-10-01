@@ -95,7 +95,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         // 만료 시간이 1일 이내로 남았을 경우 새로운 Refresh Token 생성
         if (expirationTime - currentTime < oneDayMillis) {
             String newRefreshToken = jwtUtils.createRefreshToken(username);
-            CookieUtils.addCookie(res, "refreshToken", newRefreshToken, JwtUtils.REFRESH_TOKEN_TIME);
+            CookieUtils.addCookie(res, "refreshToken", newRefreshToken, JwtUtils.REFRESH_TOKEN_TIME, true);
         }
     }
 
