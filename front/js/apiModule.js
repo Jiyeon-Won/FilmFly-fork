@@ -2,8 +2,8 @@ const serverUrl = window.location.hostname === 'localhost'
     ? 'http://localhost:8080'
     : 'https://api.filmfly.shop';
 
-// const imageUrl = 'https://image.tmdb.org/t/p/w600_and_h900_bestv2';
 const imageUrl = 'https://image.tmdb.org/t/p/w220_and_h330_face';
+
 let apiModule = (function() {
   // 기본 설정
   let settings = {
@@ -29,17 +29,17 @@ let apiModule = (function() {
             + `상태 코드 : ${xhr.status}\n`
             + `응답 데이터 : ${JSON.stringify(xhr, null , 2)}\n`
         );
-        if (xhr.responseJSON.code === 401) {
+        if (xhr.responseJSON && xhr.responseJSON.code === 401) {
           alert(`${xhr.responseJSON.message}\n로그인을 해주세요.`);
           location.href = '../html/login.html';
           return;
         }
-        if (xhr.responseJSON.code === 403) {
+        if (xhr.responseJSON && xhr.responseJSON.code === 403) {
           alert(`${xhr.responseJSON.message}\n로그인을 해주세요.`);
           location.href = '../html/login.html';
           return;
         }
-        if (errorCallback) {}errorCallback(xhr, status, error);
+        if (errorCallback) errorCallback(xhr, status, error);
       }
     };
 

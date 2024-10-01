@@ -146,7 +146,7 @@
                     // 로그인 성공 시 로컬 스토리지에 정보 저장
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('loginTime', new Date().getTime() + 14 * 24 * 60 * 60 * 1000); // 14일 후 만료
-                    location.replace('./index.html');
+                    location.href = './index.html';
                 },
                 function (xhr, status, er) {
                     alert(xhr.responseJSON.message);
@@ -163,7 +163,7 @@
                     function (response) {
                         localStorage.setItem('isLoggedIn', 'true');
                         localStorage.setItem('loginTime', new Date().getTime() + 14 * 24 * 60 * 60 * 1000); // 14일 후 만료
-                        location.replace('./index.html');
+                        location.href = './index.html';
                     },
                     function (xhr, status, error) {
                         console.log('카카오 로그인 오류');
@@ -174,9 +174,7 @@
         // 카카오 로그인 버튼 클릭 이벤트 리스너
         $('.kakao-login-btn').on('click', function () {
             const clientId = 'e21edfa48291171ae426db6063961ad2';
-            // const redirectUri = 'https://www.filmfly.life/html/login.html';
-            const redirectUri = 'http://localhost:63342/film-fly/front/html/login.html';
-            // const redirectUri = 'http://localhost:8080/front/login.html';
+            const redirectUri = 'https://www.filmfly.shop/html/login.html';
             window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
         });
     });
