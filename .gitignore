@@ -1,12 +1,9 @@
+# 제외하고 싶은 파일은 제일 하단에 추가
+# 제외하고 싶은 파일은 제일 하단에 추가
+# 제외하고 싶은 파일은 제일 하단에 추가
+
 # 게시물 생성할 때 임시 사진 저장
 /src/main/resources/static/temp
-
-# 환경변수
-/src/main/resources/properties/env.properties
-/src/main/resources/properties/env.yml
-
-# QueryDSL QClass 포함 안함
-/src/main/generated/**
 
 /src/test/java/com/sparta/filmfly/dummytest/**
 /src/main/resources/dummy/**
@@ -314,3 +311,4 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/intellij,intellij+all,java,macos,windows
 
 !gradle/wrapper/gradle-wrapper.jar
+!/src/test/java/com/sparta/filmfly/dummytest/makeDummy.zip
