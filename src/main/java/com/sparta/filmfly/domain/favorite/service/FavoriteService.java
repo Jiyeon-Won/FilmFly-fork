@@ -44,20 +44,8 @@ public class FavoriteService {
     /**
     * 자신이 찜한 영화 조회
     */
-    public PageResponseDto<MovieResponseDto> getPageFavorite(Long userId,Pageable pageable) {
-        Page<Favorite> favoriteList = favoriteRepository.findAllByUserId(userId,pageable);
-        //movie 하나 하나 선택 마다 select 쿼리 날리주는 중  나중에 수정 필요
-        List<Movie> movieList = favoriteList.stream()
-            .map(favorite -> movieRepository.findByIdOrElseThrow(favorite.getMovie().getId()))
-            .toList();
-
-        return PageResponseDto.<MovieResponseDto>builder()
-            .totalElements(favoriteList.getTotalElements())
-            .totalPages(favoriteList.getTotalPages())
-            .currentPage(favoriteList.getNumber() + 1)
-            .pageSize(favoriteList.getSize())
-            .data(movieList.stream().map(MovieResponseDto::fromEntity).toList())
-            .build();
+    public PageResponseDto<MovieResponseDto> getPageFavorite(Long userId, Pageable pageable) {
+        return favoriteRepository.getPageFavorite(userId, pageable);
     }
 
     /**

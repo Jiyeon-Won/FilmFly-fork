@@ -9,10 +9,9 @@ import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.dto.ReactionCheckResponseDto;
 import com.sparta.filmfly.domain.reaction.entity.QBad;
 import com.sparta.filmfly.domain.reaction.entity.QGood;
+import com.sparta.filmfly.domain.user.entity.QUser;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
-import java.sql.SQLOutput;
-import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
@@ -30,47 +29,41 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
     @Override
     public PageResponseDto<CommentResponseDto> findAllByBoardIdWithReactions(Long boardId, Pageable pageable) {
-        QComment comment = QComment.comment;
-        QGood good = QGood.good;
-        QBad bad = QBad.bad;
+        QComment qComment = QComment.comment;
+        QGood qGood = QGood.good;
+        QBad qBad = QBad.bad;
 
         List<CommentResponseDto> fetch = queryFactory
             .select(Projections.constructor(CommentResponseDto.class,
-                comment.id,
-                comment.user.id,
-                comment.board.id,
-                comment.user.nickname,
-                comment.user.pictureUrl,
-                comment.content,
-                comment.createdAt,
-                good.id.countDistinct().as("goodCount"),
-                bad.id.countDistinct().as("badCount")
+                qComment.id,
+                qComment.user.id,
+                qComment.board.id,
+                qComment.user.nickname,
+                qComment.user.pictureUrl,
+                qComment.content,
+                qComment.createdAt,
+                qGood.id.countDistinct().as("goodCount"),
+                qBad.id.countDistinct().as("badCount")
             ))
-            .from(comment)
-            .leftJoin(good).on(
-                good.type.eq(ReactionContentTypeEnum.COMMENT)
-                    .and(good.typeId.eq(comment.id))
+            .from(qComment)
+            .leftJoin(qGood).on(qGood.typeId.eq(qComment.id)
+                .and(qGood.type.eq(ReactionContentTypeEnum.COMMENT))
             )
-            .leftJoin(bad).on(
-                bad.type.eq(ReactionContentTypeEnum.COMMENT)
-                    .and(bad.typeId.eq(comment.id))
+            .leftJoin(qBad).on(qBad.typeId.eq(qComment.id)
+                .and(qBad.type.eq(ReactionContentTypeEnum.COMMENT))
             )
-            .where(comment.board.id.eq(boardId))
-            .groupBy(comment.id, comment.user.id, comment.user.nickname, comment.content, comment.createdAt)
-            .orderBy(comment.createdAt.desc())
+            .where(qComment.board.id.eq(boardId))
+            .groupBy(qComment.id, qComment.user.id, qComment.user.nickname, qComment.content, qComment.createdAt)
+            .orderBy(qComment.createdAt.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
 
-        for (CommentResponseDto commentResponseDto : fetch) {
-            System.out.println("댓글시간 : " + commentResponseDto.getId() + " | " + commentResponseDto.getCreatedAt());
-        }
-
         // 페이지의 총 요소 수를 가져옵니다.
         Long total = queryFactory
-            .select(comment.count())
-            .from(comment)
-            .where(comment.board.id.eq(boardId))
+            .select(qComment.count())
+            .from(qComment)
+            .where(qComment.board.id.eq(boardId))
             .fetchOne();
 
         // PageImpl을 사용하여 페이지 정보를 생성합니다.
@@ -82,30 +75,36 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
     @Override
     public PageResponseDto<CommentResponseDto> findAllByUserId(Long userId, Pageable pageable) {
-        QComment comment = QComment.comment;
-        QGood good = QGood.good;
-        QBad bad = QBad.bad;
+        QComment qComment = QComment.comment;
+        QUser qUser = QUser.user;
+        QGood qGood = QGood.good;
+        QBad qBad = QBad.bad;
 
         JPQLQuery<CommentResponseDto> query = queryFactory
-                .select(Projections.constructor(CommentResponseDto.class,
-                        comment.id,
-                        comment.user.id,
-                        comment.board.id,
-                        comment.user.nickname,
-                        comment.user.pictureUrl,
-                        comment.content,
-                        comment.updatedAt,
-                        good.id.countDistinct().as("goodCount"),
-                        bad.id.countDistinct().as("badCount")
-                ))
-                .from(comment)
-                .leftJoin(good).on(good.type.eq(ReactionContentTypeEnum.COMMENT).and(good.typeId.eq(comment.id)))
-                .leftJoin(bad).on(bad.type.eq(ReactionContentTypeEnum.COMMENT).and(bad.typeId.eq(comment.id)))
-                .where(comment.user.id.eq(userId))
-                .groupBy(comment.id, comment.user.id, comment.user.nickname, comment.content, comment.updatedAt)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(comment.createdAt.desc()); // 기본 정렬 조건: 생성 일자 최신순
+            .select(Projections.constructor(CommentResponseDto.class,
+                    qComment.id,
+                    qUser.id,
+                    qComment.board.id,
+                    qUser.nickname,
+                    qUser.pictureUrl,
+                    qComment.content,
+                    qComment.updatedAt,
+                    qGood.id.countDistinct().as("goodCount"),
+                    qBad.id.countDistinct().as("badCount")
+            ))
+            .from(qComment)
+            .join(qUser).on(qUser.id.eq(qComment.user.id))
+            .leftJoin(qGood).on(qGood.typeId.eq(qComment.id)
+                .and(qGood.type.eq(ReactionContentTypeEnum.COMMENT))
+            )
+            .leftJoin(qBad).on(qBad.typeId.eq(qComment.id)
+                .and(qBad.type.eq(ReactionContentTypeEnum.COMMENT))
+            )
+            .where(qComment.user.id.eq(userId))
+            .groupBy(qComment.createdAt, qComment.id)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .orderBy(qComment.createdAt.desc(), qComment.id.desc()); // 기본 정렬 조건: 생성 일자 최신순
 
         List<CommentResponseDto> content = query.fetch();
         long total = query.fetchCount();  // 페이지의 총 요소 수를 가져옵니다.
@@ -132,13 +131,11 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 )
             )
             .from(qComment)
-            .leftJoin(qGood).on(
-                qGood.user.eq(user)
+            .leftJoin(qGood).on(qGood.user.eq(user)
                     .and(qComment.id.eq(qGood.typeId))
                     .and(qGood.type.eq(ReactionContentTypeEnum.COMMENT))
             )
-            .leftJoin(qBad).on(
-                qBad.user.eq(user)
+            .leftJoin(qBad).on(qBad.user.eq(user)
                     .and(qComment.id.eq(qBad.typeId))
                     .and(qBad.type.eq(ReactionContentTypeEnum.COMMENT))
             )
