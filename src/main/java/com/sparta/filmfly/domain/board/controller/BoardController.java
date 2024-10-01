@@ -60,12 +60,18 @@ public class BoardController {
         @RequestParam(required = false, defaultValue = "10") int size,
         @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
         @RequestParam(required = false, defaultValue = "false") boolean isAsc,
-        @RequestParam(value = "filterGoodCount", required = false) final Long filterGoodCount,
-        @RequestParam(value = "filterHits", required = false) final Long filterHits,
-        @RequestParam(value = "search", required = false) final String search
+        @RequestParam(value = "filterGoodCount", required = false) Long filterGoodCount,
+        @RequestParam(value = "filterHits", required = false) Long filterHits,
+        @RequestParam(value = "search", required = false) String search
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
         PageResponseDto<BoardPageDto>  responseDto = boardService.getPageBoard(filterGoodCount,filterHits,search,pageable);
+        return ResponseUtils.success(responseDto);
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<DataResponseDto<List<BoardResponseDto>>> getReviews() {
+        List<BoardResponseDto> responseDto = boardService.getBoardsRecent();
         return ResponseUtils.success(responseDto);
     }
 

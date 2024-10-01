@@ -1,6 +1,5 @@
 package com.sparta.filmfly.domain.review.service;
 
-import com.sparta.filmfly.domain.block.repository.BlockRepository;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
@@ -149,7 +148,8 @@ public class ReviewService {
      * 최신 리뷰 목록
      */
     @Transactional(readOnly = true)
-    public PageResponseDto<ReviewResponseDto> getReviews(Long filterGoodCount, String search, Pageable pageable) {
-        return reviewRepository.findAllWithFilters(pageable, filterGoodCount, search);
+    public List<ReviewResponseDto> getReviewsRecent() {
+        int limit = 20;
+        return reviewRepository.findReviewsRecent(limit);
     }
 }

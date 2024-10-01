@@ -126,17 +126,9 @@ public class ReviewController {
     /**
      * 최신 리뷰 목록
      */
-    @GetMapping("/reviews")
-    public ResponseEntity<DataResponseDto<PageResponseDto<ReviewResponseDto>>> getReviews(
-            @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam(required = false, defaultValue = "10") int size,
-            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,  
-            @RequestParam(required = false, defaultValue = "false") boolean isAsc,
-            @RequestParam(value = "filterGoodCount", required = false) final Long filterGoodCount,
-            @RequestParam(value = "search", required = false) final String search
-    ) {
-        Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<ReviewResponseDto> responseDto = reviewService.getReviews(filterGoodCount,search,pageable);
+    @GetMapping("/reviews/recent")
+    public ResponseEntity<DataResponseDto<List<ReviewResponseDto>>> getReviews() {
+        List<ReviewResponseDto> responseDto = reviewService.getReviewsRecent();
         return ResponseUtils.success(responseDto);
     }
 }

@@ -1,6 +1,5 @@
 package com.sparta.filmfly.domain.review.dto;
 
-import ch.qos.logback.core.joran.conditional.IfAction;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.filmfly.domain.review.entity.Review;
 import java.time.LocalDateTime;
@@ -49,6 +48,21 @@ public class ReviewResponseDto {
         this.isBad = false;
         this.isBlock = false;
         this.isOwner = false;
+    }
+
+    public ReviewResponseDto(
+        Long id, Long movieId, String movieTitle, Float rating,
+        String title, String content, LocalDateTime createdAt, Long goodCount, Long badCount
+    ) {
+        this.id = id;
+        this.movieId = movieId;
+        this.movieTitle = movieTitle;
+        this.rating = rating;
+        this.title = title;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.goodCount = goodCount;
+        this.badCount = badCount;
     }
 
     public static ReviewResponseDto fromEntity(

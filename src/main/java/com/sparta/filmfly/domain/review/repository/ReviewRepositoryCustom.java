@@ -17,6 +17,6 @@ public interface ReviewRepositoryCustom {
 
     List<ReviewReactionCheckResponseDto> checkReviewReaction(User user, List<Long> reviewIds);
 
-    PageResponseDto<ReviewResponseDto> findAllWithFilters(Pageable pageable, Long filterGoodCount, String search);
+    List<ReviewResponseDto> findReviewsRecent(int limit);
 
 }

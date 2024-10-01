@@ -9,7 +9,6 @@ import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.dto.ReactionCheckResponseDto;
 import com.sparta.filmfly.domain.reaction.service.BadService;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
-import com.sparta.filmfly.domain.review.dto.ReviewUserResponseDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
@@ -160,5 +159,11 @@ public class BoardService {
      */
     public long getBoardCount() {
         return boardRepository.count();
+    }
+
+    @Transactional(readOnly = true)
+    public List<BoardResponseDto> getBoardsRecent() {
+        int limit = 20;
+        return boardRepository.findBoardsRecent(limit);
     }
 }

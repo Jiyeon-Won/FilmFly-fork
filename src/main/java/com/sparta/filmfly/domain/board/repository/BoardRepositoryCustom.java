@@ -4,7 +4,6 @@ import com.sparta.filmfly.domain.board.dto.BoardPageDto;
 import com.sparta.filmfly.domain.board.dto.BoardResponseDto;
 import com.sparta.filmfly.domain.reaction.dto.ReactionCheckResponseDto;
 import com.sparta.filmfly.domain.user.entity.User;
-import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
 import org.springframework.data.domain.Pageable;
 
@@ -18,4 +17,6 @@ public interface BoardRepositoryCustom {
 
 
     ReactionCheckResponseDto checkBoardReaction(User user, Long boardId);
+
+    List<BoardResponseDto> findBoardsRecent(int limit);
 }
