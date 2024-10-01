@@ -167,20 +167,11 @@
             });
   }
 
-  function truncateText(text, maxLength) {
-    if (text.length > maxLength) {
-      return text.substring(0, maxLength) + '...';
-    }
-    return text;
-  }
-
   function generateMovieHtml(movie) {
-    const maxLength = 100; // 원하는 최대 글자 수 설정
-    const truncatedOverview = truncateText(movie.overview, maxLength);
     return `
       <div class="col" data-movie-id="${movie.id}">
         <div class="card h-100">
-          <img src="${imageUrl}${movie.posterPath}" class="card-img-top" alt="영화 포스터">
+          <img src="${imageUrl}${movie.posterPath || movie.backdropPath}" class="card-img-top" alt="영화 포스터">
           <i class="fa-solid fa-trash-can delete-icon" data-movie-id="${movie.id}"></i>
           <div class="card-body" style="background-color: #2a2a2a; color: white;"> <!-- 배경색 회색, 폰트색 흰색 -->
             <h5 class="card-title mypage-entity-title text-center">${movie.title}</h5>

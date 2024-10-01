@@ -1,6 +1,7 @@
 package com.sparta.filmfly.domain.movie.entity;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import lombok.*;
 
 import java.util.List;
@@ -10,13 +11,14 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
+@ToString
 public class Movie {
     @Id
     private Long id;
     private boolean adult;
     private String backdropPath;
-    @ElementCollection
-    private List<Integer> genreIds;
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MovieGenre> movieGenres = new ArrayList<>();
     private String originalLanguage;
     private String originalTitle;
     @Column(columnDefinition = "TEXT")
@@ -28,14 +30,12 @@ public class Movie {
     private boolean video;
     private double voteAverage;
     private int voteCount;
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MovieCredit> movieCreditList;
 
     // DTO로부터 엔티티를 업데이트하는 메서드
     public void update(
             boolean adult,
             String backdropPath,
-            List<Integer> genreIds,
+            List<MovieGenre> movieGenres,
             String originalLanguage,
             String originalTitle,
             String overview,
@@ -48,7 +48,7 @@ public class Movie {
             int voteCount) {
         this.adult = adult;
         this.backdropPath = backdropPath;
-        this.genreIds = genreIds;
+        this.movieGenres = movieGenres != null ? movieGenres : new ArrayList<>();
         this.originalLanguage = originalLanguage;
         this.originalTitle = originalTitle;
         this.overview = overview;
@@ -60,5 +60,4 @@ public class Movie {
         this.voteAverage = voteAverage;
         this.voteCount = voteCount;
     }
-
 }

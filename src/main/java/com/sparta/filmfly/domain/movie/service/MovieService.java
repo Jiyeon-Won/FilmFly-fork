@@ -9,11 +9,14 @@ import com.sparta.filmfly.domain.movie.repository.MovieCreditRepository;
 import com.sparta.filmfly.domain.movie.repository.MovieRepository;
 import com.sparta.filmfly.domain.review.repository.ReviewRepository;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
-import com.sparta.filmfly.global.common.response.PageResponseDto;
+import com.sparta.filmfly.global.common.response.CursorResponseDto;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.common.util.JsonFormatter;
 import com.sparta.filmfly.global.exception.custom.detail.ApiRequestFailedException;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -21,8 +24,6 @@ import okhttp3.Request;
 import okhttp3.Request.Builder;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -44,6 +45,7 @@ public class MovieService {
     private final MovieCreditRepository movieCreditRepository;
     private final GenreRepository genreRepository;
     private final OkHttpClient httpClient;
+    private final EntityManager em;
 
     // 이미지 경로 : https://image.tmdb.org/t/p/w220_and_h330_face/이미지.jpg
     // 크기 : w220_and_h330_face , w600_and_h900_bestv2 , w1280
@@ -54,45 +56,53 @@ public class MovieService {
     @Value("${TMDB_API_AUTHORIZATION}")
     private String TMDB_API_AUTHORIZATION;
 
-    public Page<Movie> getMovieList(String keyword, Pageable pageable) {
-        // 제목에 키워드가 포함된 영화 목록을 조회
-        List<Movie> movieList = movieRepository.findMoviesByTitleContaining(keyword, pageable);
-        // 총 영화 수 산출
-        long total = movieRepository.countByTitleContaining(keyword);
-        // PageImpl 을 사용하여 List<Movie> 를 Page<Movie> 로 변환
-        return new PageImpl<>(movieList, pageable, total);
-    }
+    Map<Integer, Integer> map = Map.ofEntries(
+        Map.entry(28,20),
+        Map.entry(12,21),
+        Map.entry(16,22),
+        Map.entry(35,23),
+        Map.entry(80,24),
+        Map.entry(99,25),
+        Map.entry(18,26),
+        Map.entry(10751,27),
+        Map.entry(14,28),
+        Map.entry(36,29),
+        Map.entry(27,30),
+        Map.entry(10402,31),
+        Map.entry(9648,32),
+        Map.entry(10749,33),
+        Map.entry(878,34),
+        Map.entry(10770,35),
+        Map.entry(53,36),
+        Map.entry(10752,37),
+        Map.entry(37,38)
+    );
 
     /**
      * 영화 검색 (페이징)
      */
-    public PageResponseDto<MovieReactionsResponseDto> getPageMovieBySearchCond(
-        MovieSearchCond searchCond, Pageable pageable
+    public CursorResponseDto<MovieReactionsResponseDto> getPageMovieBySearchCond(
+        MovieSearchCond searchOptions, Double lastPopularity, Pageable pageable
     ) {
-        return movieRepository.getPageMovieBySearchCond(searchCond, pageable);
+        return movieRepository.getPageMovieBySearchCond(searchOptions, lastPopularity, pageable);
     }
 
-    public PageResponseDto<MovieResponseDto> getMovieTrendList(Pageable pageable) {
-        Page<Movie> trendMovies = movieRepository.findAllByOrderByPopularityDesc(pageable);
+    public List<MovieSimpleResponseDto> getMovieTrendList() {
+        List<Movie> trendMovies = movieRepository.findTop20ByOrderByPopularityDesc();
 
-        return PageResponseDto.<MovieResponseDto>builder()
-            .totalElements(trendMovies.getTotalElements())
-            .totalPages(trendMovies.getTotalPages())
-            .currentPage(trendMovies.getNumber() + 1)
-            .pageSize(trendMovies.getSize())
-            .data(trendMovies.stream().map(MovieResponseDto::fromEntity).toList())
-            .build();
+        return trendMovies.stream()
+            .map(MovieSimpleResponseDto::fromEntity)
+            .toList();
     }
 
     @Transactional
     public List<ApiMovieResponseDto> apiRequestForMovie(Object apiDiscoverMovieRequestDto) {
-        String movieUrl = "";
+        String movieUrl;
         if (apiDiscoverMovieRequestDto instanceof ApiDiscoverMovieRequestDto) {
             movieUrl = "/3/discover/movie";
         } else {
             movieUrl = "/3/search/movie";
         }
-//        String credits = "/3/movie/{movieId}/credits";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl + movieUrl);
         Field[] fields = apiDiscoverMovieRequestDto.getClass().getDeclaredFields();
@@ -130,11 +140,32 @@ public class MovieService {
             ApiMovieResponse apiMovieResponse = objectMapper.readValue(body, ApiMovieResponse.class);
             // 영화 api 조회 > 영화 목록 저장 및 업데이트 > 각 영화 > 배우 목록 저장 및 업데이트 > 중간 테이블 최신화 > 영화, 배우 테이블 동기화
             List<ApiMovieResponseDto> apiMovieResponseDtoList = apiMovieResponse.getResults();
-            // 리스트 출력 확인
+
             List<Movie> movieList = apiMovieResponseDtoList.stream()
-                    .map(ApiMovieResponseDto::toEntity)
-                    .toList();
+                .map(ApiMovieResponseDto::toEntity)
+                .toList();
             movieList = movieRepository.saveAll(movieList);
+
+            List<MovieGenre> movieGenres = new ArrayList<>();
+            for (ApiMovieResponseDto dto : apiMovieResponseDtoList) {
+                Long movieId = (long) dto.getId();
+                for (Integer genreId : dto.getGenreIds()) {
+                    MovieGenre build = MovieGenre.builder()
+                        .movie(em.getReference(Movie.class, movieId))
+                        .genre(em.getReference(Genre.class, map.get(genreId)))
+                        .build();
+                    movieGenres.add(build);
+                }
+            }
+
+            for (Movie movie : movieList) {
+                for (MovieGenre movieGenre : movieGenres) {
+                    if (movie.getId().equals(movieGenre.getMovie().getId())) {
+                        movie.getMovieGenres().add(movieGenre);
+                    }
+                }
+            }
+
             for (Movie movie : movieList) {
                 // 영화 배우 목록 API 호출
                 Request creditsRequest = requestBuilder(String.format("%s/3/movie/%d/credits", baseUrl, movie.getId()));

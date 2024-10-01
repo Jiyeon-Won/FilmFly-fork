@@ -1,27 +1,37 @@
 package com.sparta.filmfly.domain.movie.controller;
 
-import com.sparta.filmfly.domain.movie.dto.*;
+import com.sparta.filmfly.domain.movie.dto.ApiDiscoverMovieRequestDto;
+import com.sparta.filmfly.domain.movie.dto.ApiMovieResponseDto;
+import com.sparta.filmfly.domain.movie.dto.ApiSearchMovieRequestDto;
+import com.sparta.filmfly.domain.movie.dto.GenresResponseDto;
+import com.sparta.filmfly.domain.movie.dto.MovieDetailSimpleResponseDto;
+import com.sparta.filmfly.domain.movie.dto.MovieReactionsResponseDto;
+import com.sparta.filmfly.domain.movie.dto.MovieSearchCond;
+import com.sparta.filmfly.domain.movie.dto.MovieSimpleResponseDto;
 import com.sparta.filmfly.domain.movie.entity.OriginLanguageEnum;
 import com.sparta.filmfly.domain.movie.service.MovieService;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
+import com.sparta.filmfly.global.common.response.CursorResponseDto;
 import com.sparta.filmfly.global.common.response.DataResponseDto;
 import com.sparta.filmfly.global.common.response.MessageResponseDto;
-import com.sparta.filmfly.global.common.response.PageResponseDto;
-import com.sparta.filmfly.global.util.ResponseUtils;
 import com.sparta.filmfly.global.util.PageUtils;
+import com.sparta.filmfly.global.util.ResponseUtils;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -78,9 +88,10 @@ public class MovieController {
     * 영화 검색 (페이징)
     */
     @GetMapping("/movies")
-    public ResponseEntity<DataResponseDto<PageResponseDto<MovieReactionsResponseDto>>> getListMovie(
+    public ResponseEntity<DataResponseDto<CursorResponseDto<MovieReactionsResponseDto>>> getListMovie(
+        @RequestParam(required = false) Double lastPopularity,
         @RequestParam(required = false, defaultValue = "1") int page,
-        @RequestParam(required = false, defaultValue = "12") int size,
+        @RequestParam(required = false, defaultValue = "25") int size,
         @RequestParam(required = false, defaultValue = "id") String sortBy,
         @RequestParam(required = false, defaultValue = "true") boolean isAsc,
         @RequestParam(required = false, defaultValue = "") String search,
@@ -95,8 +106,8 @@ public class MovieController {
 
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
 
-        PageResponseDto<MovieReactionsResponseDto> responseDto = movieService.getPageMovieBySearchCond(
-            movieSearchCond, pageable
+        CursorResponseDto<MovieReactionsResponseDto> responseDto = movieService.getPageMovieBySearchCond(
+            movieSearchCond, lastPopularity, pageable
         );
         return ResponseUtils.success(responseDto);
     }
@@ -105,16 +116,8 @@ public class MovieController {
      * 최신 인기 영화
      */
     @GetMapping("/movies/trend")
-    public ResponseEntity<DataResponseDto<PageResponseDto<MovieResponseDto>>> getMovieList(
-        @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "10") int size,
-        @RequestParam(defaultValue = "id") String sortBy,
-        @RequestParam(defaultValue = "true") boolean isAsc
-    ) {
-            Sort sort = isAsc ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-            Pageable pageable = PageRequest.of(page-1, size, sort);
-        PageResponseDto<MovieResponseDto> responseDto = movieService.getMovieTrendList(pageable);
-
+    public ResponseEntity<DataResponseDto<List<MovieSimpleResponseDto>>> getMovieList() {
+        List<MovieSimpleResponseDto> responseDto = movieService.getMovieTrendList();
         return ResponseUtils.success(responseDto);
     }
 
@@ -124,7 +127,7 @@ public class MovieController {
     @GetMapping("/movies/{movieId}")
     public ResponseEntity<DataResponseDto<MovieDetailSimpleResponseDto>> getMovie(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long movieId
+        @PathVariable Long movieId
     ) {
         MovieDetailSimpleResponseDto responseDto = movieService.getMovie(userDetails, movieId);
         return ResponseUtils.success(responseDto);
