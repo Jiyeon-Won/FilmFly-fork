@@ -165,7 +165,7 @@ public class KakaoService {
         userRepository.save(user);
 
         CookieUtils.addCookie(response, "accessToken", accessToken.replace(" ", "+"), JwtUtils.ACCESS_TOKEN_TIME);
-        CookieUtils.addCookie(response, "accessToken", accessToken.replace(" ", "+"), JwtUtils.REFRESH_TOKEN_TIME);
+        CookieUtils.addCookie(response, "refreshToken", refreshToken.replace(" ", "+"), JwtUtils.REFRESH_TOKEN_TIME, true);
         log.info("카카오 로그인 access Token: {}", accessToken);
         log.info("카카오 로그인 refresh Token: {}", refreshToken);
 
