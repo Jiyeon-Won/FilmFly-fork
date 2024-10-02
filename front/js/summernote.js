@@ -19,7 +19,7 @@ $('#summernote').summernote({
       }
     },
     onMediaDelete: function($target) {
-      var deletedImageUrl = $target.attr('src').split('/').pop();
+      var deletedImageUrl = $target.attr('src');
       imageDelete(deletedImageUrl);
     },
   }

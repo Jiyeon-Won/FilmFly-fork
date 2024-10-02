@@ -1,39 +1,39 @@
 package com.sparta.filmfly.domain.file.service;
 
-import com.sparta.filmfly.global.util.FileUtils;
-import com.sparta.filmfly.domain.media.dto.MediaResponseDto;
-import com.sparta.filmfly.domain.media.entity.Media;
-import com.sparta.filmfly.domain.media.entity.MediaTypeEnum;
-import com.sparta.filmfly.domain.media.service.MediaService;
+import com.sparta.filmfly.domain.board.entity.Board;
+import com.sparta.filmfly.domain.board.repository.BoardRepository;
+import com.sparta.filmfly.domain.file.etc.MediaTypeEnum;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.UploadException;
+import com.sparta.filmfly.global.infra.S3Uploader;
+import com.sparta.filmfly.global.util.FileUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FileService {
 
-    private final MediaService mediaService;
+    private final S3Uploader s3Uploader;
+    private final BoardRepository boardRepository;
     //img src 패턴 검사용
     private final String imgReg = "(<img[^>]*src\s*=\s*[\"']?([^>\"\']+)[\"']?[^>]*>)"; // <img src 패턴
     private final Pattern pattern = Pattern.compile(imgReg);
 
     public String saveFileToLocal(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
-        String folderLocation = FileUtils.getAbsoluteUploadFolder(FileUtils.uploadLocation);
+        String folderLocation = FileUtils.getAbsoluteUploadFolder(FileUtils.LOCAL_UPLOAD_PATH);
         String uuidFileName = FileUtils.createUuidFileName(originalFilename);
         String fileFullPath = folderLocation + uuidFileName;
         File saveFile = new File(fileFullPath);
@@ -47,7 +47,10 @@ public class FileService {
     }
 
     public void deleteFileToLocal(String imageName) {
-        FileUtils.deleteFileToLocal(imageName);
+        Map<String, String> map = FileUtils.extractFileName(imageName);
+        if (!map.get("url").contains(FileUtils.S3_URL)) {
+            FileUtils.deleteFileToLocal(map.get("file"));
+        }
     }
 
     /**
@@ -65,7 +68,7 @@ public class FileService {
             //img의 src 값의 앞 부분이 임시 이미지면 http://localhost:8080/temp ?
             if (src.split("://")[1].startsWith(currentUrl + "/temp/")) {
                 try {
-                    String filePath = FileUtils.getAbsoluteUploadFolder(FileUtils.uploadLocation) + srcFileName;
+                    String filePath = FileUtils.getAbsoluteUploadFolder(FileUtils.LOCAL_UPLOAD_PATH) + srcFileName;
 
                     File file = new File(filePath); //temp 폴더의 임시 이미지 지정
                     MultipartFile multipartFile = FileUtils.convertFileToMultipartFile(file);
@@ -73,10 +76,10 @@ public class FileService {
                     //temp 폴더에 있는 경우
                     if (!multipartFile.isEmpty()) {
                         // s3에 저장 및 media 테이블에 저장
-                        MediaResponseDto mediaResponseDto = mediaService.createMedia(mediaType, boardId, multipartFile);
+                        String uploadedFileUrl = s3Uploader.uploadFile(mediaType, boardId, multipartFile);
                         // local 임시 이미지 삭제
                         FileUtils.deleteFileToLocal(srcFileName);
-                        content = content.replace(src, mediaResponseDto.getUrl()); //local 이미지 -> s3 주소로 변경
+                        content = content.replace(src, uploadedFileUrl); //local 이미지 -> s3 주소로 변경
                         matcher = pattern.matcher(content);
                     } else {
                         //없는 파일이면 공백으로 지우기
@@ -95,41 +98,54 @@ public class FileService {
     /**
      * 변경된 이미지 파일 검사 사라진 s3 경로는 s3에서 삭제
      */
-    public void checkModifiedImageFile(MediaTypeEnum mediaType, Long mediaId, String content) {
+    public void checkModifiedImageFile(MediaTypeEnum mediaType, Long typeId, String content) {
         content = FileUtils.decodeUrlsInContent(content);
 
-        List<Media> mediaList = mediaService.getListMedia(mediaType, mediaId);
-        List<Boolean> mediaExists = new ArrayList<>(Collections.nCopies(mediaList.size(), false));
+        Board board = null;
+        if (MediaTypeEnum.BOARD == mediaType) {
+            board = boardRepository.findByIdOrElseThrow(typeId);
+        }
 
-        Matcher matcher = pattern.matcher(content);
-        while (matcher.find()) {
-            String src = matcher.group(2).trim();
-            String mediaText;
-            if (mediaType == MediaTypeEnum.BOARD) { //S3Uploader.createMediaPath 랑 내용 비슷함
-                mediaText = "boards/";
-            } else if (mediaType == MediaTypeEnum.OFFICE_BOARD) {
-                mediaText = "officeBoards/";
-            } else {
-                mediaText = "etc/";
-            }
-            String s3Url = "https://filmfly-backend.s3.ap-northeast-2.amazonaws.com/" + mediaText + mediaId; // 팀플용 은규님 S3
-            String s3Url2 = "https://outsourcing-profile.s3.ap-northeast-2.amazonaws.com/" + mediaText + mediaId; //테스트용 JunMo S3
-            if (src.startsWith(s3Url) || src.startsWith(s3Url2)) {
-                // s3 제거 대상 예외 추가 로직
-                for (int i = 0; i < mediaList.size(); i++) {
-                    Media media = mediaList.get(i);
-                    if (media.getS3Url().equals(src)) {
-                        mediaExists.set(i, true);
-                    }
+        List<String> changeImageUrls = extractedImageUrls(mediaType, typeId, content);
+        List<String> savedImageUrls = extractedImageUrls(mediaType, typeId, board.getContent());
+        for (String url : changeImageUrls) {
+            try {
+                if (!savedImageUrls.contains(url)) {
+                    String fileName = FileUtils.extractFileName(url).get("file");
+                    String filePath = FileUtils.getAbsoluteUploadFolder(FileUtils.LOCAL_UPLOAD_PATH) + fileName;
+                    File file = new File(filePath); //temp 폴더의 임시 이미지 지정
+                    MultipartFile multipartFile = FileUtils.convertFileToMultipartFile(file);
+                    s3Uploader.uploadFile(mediaType, typeId, multipartFile);
                 }
+            } catch (IOException e) {
+                throw new UploadException(ResponseCodeEnum.BOARD_FILE_PROCESSING_ERROR);
             }
         }
-        for (int i = 0; i < mediaExists.size(); i++) {
-            //사라진 이미지면, content에 존재하지 않던 s3면 삭제
-            if (!mediaExists.get(i)) {
-                Media media = mediaList.get(i);
-                mediaService.deleteMediaAndS3(media);
+        for (String url : savedImageUrls) {
+            if (!changeImageUrls.contains(url)) {
+                s3Uploader.deleteFile(url);
             }
         }
     }
+
+    public List<String> extractedImageUrls(MediaTypeEnum mediaType, Long typeId, String content) {
+        Matcher matcher = pattern.matcher(content);
+        List<String> result = new ArrayList<>();
+        while (matcher.find()) {
+            String src = matcher.group(2).trim();
+            String mediaText;
+            if (mediaType == MediaTypeEnum.BOARD) {
+                mediaText = "boards/";
+            } else {
+                mediaText = "etc/";
+            }
+            String s3Url = FileUtils.S3_URL + mediaText + typeId;
+            if (src.startsWith(s3Url)) {
+                result.add(src);
+            }
+        }
+        return result;
+    }
+
+
 }

@@ -1,10 +1,14 @@
 package com.sparta.filmfly.domain.board.service;
 
-import com.sparta.filmfly.domain.board.dto.*;
+import com.sparta.filmfly.domain.board.dto.BoardPageDto;
+import com.sparta.filmfly.domain.board.dto.BoardReactionResponseDto;
+import com.sparta.filmfly.domain.board.dto.BoardRequestDto;
+import com.sparta.filmfly.domain.board.dto.BoardResponseDto;
+import com.sparta.filmfly.domain.board.dto.BoardUpdateResponseDto;
 import com.sparta.filmfly.domain.board.entity.Board;
 import com.sparta.filmfly.domain.board.repository.BoardRepository;
+import com.sparta.filmfly.domain.file.etc.MediaTypeEnum;
 import com.sparta.filmfly.domain.file.service.FileService;
-import com.sparta.filmfly.domain.media.entity.MediaTypeEnum;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.dto.ReactionCheckResponseDto;
 import com.sparta.filmfly.domain.reaction.service.BadService;
@@ -13,14 +17,13 @@ import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service

@@ -1,9 +1,10 @@
 package com.sparta.filmfly.global.util;
 
-import com.sparta.filmfly.domain.file.util.CustomMultipartFile;
+import com.sparta.filmfly.domain.file.etc.CustomMultipartFile;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -22,8 +23,9 @@ import java.util.regex.Pattern;
 @Slf4j
 public abstract class FileUtils {
 
-    public static final String uploadLocation = "/src/main/resources/static/temp/";
-    public static final String sqlLocation = "/src/main/resources/dummy/";
+    public static final String LOCAL_UPLOAD_PATH = "/src/main/resources/static/temp/";
+    public static final String SQL_DUMMY_PATH = "/src/main/resources/dummy/";
+    public static final String S3_URL = "https://img.filmfly.shop/";
 
     /**
      * 임시 저장된 이미지 폴더 경로
@@ -55,19 +57,22 @@ public abstract class FileUtils {
      * http://localhost:8080/temp/9bee7b11-3고양이.jpg  -> 9bee7b11-3고양이.jpg
      */
     public static Map<String, String> extractFileName(String url) {
-        if (url == null || url.isEmpty()) {
-            return null;
+        // 슬래시 이후의 부분을 파일 이름으로 추출합니다.
+        Map<String, String> map = new HashMap<>();
+
+        if (!StringUtils.hasText(url)) {
+            return map;
         }
+
         // URL에서 마지막 슬래시 위치를 찾습니다.
         int lastSlashIndex = url.lastIndexOf('/');
         if (lastSlashIndex == -1) {
-            return null;
+            return map;
         }
-        // 슬래시 이후의 부분을 파일 이름으로 추출합니다.
-        Map<String, String> urlMap = new HashMap<>();
-        urlMap.put("url", url.substring(0,lastSlashIndex + 1));
-        urlMap.put("file", url.substring(lastSlashIndex + 1));
-        return urlMap;
+
+        map.put("url", url.substring(0, lastSlashIndex + 1));
+        map.put("file", url.substring(lastSlashIndex + 1));
+        return map;
     }
 
     /**
@@ -96,7 +101,7 @@ public abstract class FileUtils {
      * local 파일 삭제
      */
     public static void deleteFileToLocal(String imageName) {
-        Path path = Paths.get(getAbsoluteUploadFolder(uploadLocation), imageName);
+        Path path = Paths.get(getAbsoluteUploadFolder(LOCAL_UPLOAD_PATH), imageName);
         try {
             // 파일 삭제
             Files.delete(path);
@@ -134,7 +139,7 @@ public abstract class FileUtils {
      * @param data 저장할 SQL 데이터
      */
     public static void saveSqlToFile(String fileName, String data) {
-        String uploadFolder = getAbsoluteUploadFolder(sqlLocation);
+        String uploadFolder = getAbsoluteUploadFolder(SQL_DUMMY_PATH);
         Path filePath = Paths.get(uploadFolder, fileName);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toFile()))) {
             writer.write(data);
