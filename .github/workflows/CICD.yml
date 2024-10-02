@@ -4,8 +4,6 @@ name: CICD
 on: # 트리거 설정
   push:
     branches: [ "main" ] # main 브랜치로 push 시 트리거
-  pull_request:
-    branches: [ "main" ] # main 브랜치로 PR 시 트리거
 
 permissions:
   contents: read
