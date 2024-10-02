@@ -18,7 +18,7 @@ COPY ${JAR_FILE} /apps/app.jar
 # $JAVA_OPTS → docker-compose-blue.yml 에서 힙 메모리 설정
 # -Dspring.profiles.active=$PROFILES  활성화할 프로파일을 설정
 # -Dserver.env=$ENV  환경 변수를 설정
-ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /apps/app.jar -Dspring.profiles.active=$PROFILES -Dserver.env=$ENV"]
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -Dspring.profiles.active=$PROFILES -Dserver.env=$ENV -jar /apps/app.jar"]
 
 # $JAVA_OPTS를 사용하지 않는다면 아래처럼 해도 됨 (오타가 없으면)
 # ENTRYPOINT ["java", "-Dspring.profiles.active=${PROFILES}", "-Dserver.env=${ENV}", "-jar", "app.jar"]
