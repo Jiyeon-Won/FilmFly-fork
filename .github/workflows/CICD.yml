@@ -143,13 +143,13 @@ jobs:
             set +e
             echo "Starting health check on port ${{ env.STOPPED_PORT }}"
             for i in {1..6}; do
+              sleep 10
               STATUS=$(curl -o /dev/null -w "%{http_code}" -s "http://localhost:${{ env.STOPPED_PORT }}/env" || true)
               echo "Attempt $i: Status code $STATUS"
               if [ "$STATUS" = "200" ]; then
                 echo "Health check passed"
                 exit 0
               fi
-              sleep 10
             done
             echo "Health check failed after 6 attempts"
             exit 1
