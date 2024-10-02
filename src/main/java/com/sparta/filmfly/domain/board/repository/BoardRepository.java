@@ -17,7 +17,5 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
         }
     }
 
-    boolean existsByIdAndUserId(Long id, Long userId);
-
     long count();
 }

@@ -90,28 +90,28 @@ public class BadService {
     /**
      * 사용자가 싫어요를 누른 영화 조회
      */
-    public PageResponseDto<List<ReactionMovieResponseDto>> getPageBadMovie(Long userId, Pageable pageable) {
+    public PageResponseDto<ReactionMovieResponseDto> getPageBadMovie(Long userId, Pageable pageable) {
         return badRepository.getPageMovieByUserBad(userId, pageable);
     }
 
     /**
      * 사용자가 싫어요를 누른 리뷰 조회
      */
-    public PageResponseDto<List<ReactionReviewResponseDto>> getPageBadReview(Long userId, Pageable pageable) {
+    public PageResponseDto<ReactionReviewResponseDto> getPageBadReview(Long userId, Pageable pageable) {
         return badRepository.getPageReviewByUserBad(userId, pageable);
     }
 
     /**
      * 사용자가 싫어요를 누른 게시물 조회
      */
-    public PageResponseDto<List<ReactionBoardResponseDto>> getPageBadBoard(Long userId, Pageable pageable) {
+    public PageResponseDto<ReactionBoardResponseDto> getPageBadBoard(Long userId, Pageable pageable) {
         return badRepository.getPageBoardByUserBad(userId, pageable);
     }
 
     /**
      * 사용자가 싫어요를 누른 댓글 조회
      */
-    public PageResponseDto<List<ReactionCommentResponseDto>> getPageBadComment(Long userId, Pageable pageable) {
+    public PageResponseDto<ReactionCommentResponseDto> getPageBadComment(Long userId, Pageable pageable) {
         return badRepository.getPageCommentByUserBad(userId, pageable);
     }
 }

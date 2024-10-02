@@ -1,5 +1,6 @@
 package com.sparta.filmfly.domain.user.service;
 
+import com.sparta.filmfly.domain.file.etc.MediaTypeEnum;
 import com.sparta.filmfly.domain.user.dto.UserDeleteRequestDto;
 import com.sparta.filmfly.domain.user.dto.UserPasswordUpdateRequestDto;
 import com.sparta.filmfly.domain.user.dto.UserProfileUpdateRequestDto;
@@ -10,7 +11,7 @@ import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.domain.user.entity.UserStatusEnum;
 import com.sparta.filmfly.domain.user.repository.UserRepository;
-import com.sparta.filmfly.global.common.S3Uploader;
+import com.sparta.filmfly.global.infra.S3Uploader;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.DuplicateException;
 import com.sparta.filmfly.global.exception.custom.detail.InformationMismatchException;
@@ -29,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -126,12 +128,11 @@ public class UserService {
 
         if (profilePicture != null && !profilePicture.isEmpty()) {
             try {
-                if (!s3Uploader.isFileSame(profilePicture, pictureUrl)) {
-                    if (pictureUrl != null && !pictureUrl.isEmpty()) {
-                        s3Uploader.delete(pictureUrl); // 기존 프로필 사진 삭제
-                    }
-                    pictureUrl = s3Uploader.upload(profilePicture, "profile-pictures");
+                String updatedUrl = s3Uploader.uploadFile(MediaTypeEnum.USER, user.getId(), profilePicture);
+                if (StringUtils.hasText(pictureUrl)) {
+                    s3Uploader.deleteFile(pictureUrl);
                 }
+                pictureUrl = updatedUrl;
             } catch (IOException e) {
                 throw new UploadException(ResponseCodeEnum.UPLOAD_FAILED);
             }

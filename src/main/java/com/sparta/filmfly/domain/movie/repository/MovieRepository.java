@@ -3,15 +3,12 @@ package com.sparta.filmfly.domain.movie.repository;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import com.sparta.filmfly.global.common.response.ResponseCodeEnum;
 import com.sparta.filmfly.global.exception.custom.detail.NotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MovieRepository extends JpaRepository<Movie, Long>, MovieRepositoryCustom {
 
-    Page<Movie> findAllByOrderByPopularityDesc(Pageable pageable);
+    List<Movie> findTop20ByOrderByPopularityDesc();
 
     default Movie findByIdOrElseThrow(Long id) {
         return findById(id).orElseThrow(
@@ -19,9 +16,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, MovieReposi
         );
     }
 
-    List<Movie> findMoviesByTitleContaining(String keyword, Pageable pageable);
-
-    long countByTitleContaining(String keyword);
     long count();
 
     default void existsByIdOrElseThrow(Long movieId) {

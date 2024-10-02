@@ -57,7 +57,7 @@ public class BadController {
      * 사용자가 좋아요를 누른 영화 조회
      */
     @GetMapping("/movies/users/{userId}")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<ReactionMovieResponseDto>>>> getPageGoodMovie(
+    public ResponseEntity<DataResponseDto<PageResponseDto<ReactionMovieResponseDto>>> getPageGoodMovie(
         @PathVariable Long userId,
         @RequestParam(required = false, defaultValue = "1") int page,
         @RequestParam(required = false, defaultValue = "10") int size,
@@ -65,7 +65,7 @@ public class BadController {
         @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<ReactionMovieResponseDto>> responseDto = badService.getPageBadMovie(userId, pageable);
+        PageResponseDto<ReactionMovieResponseDto> responseDto = badService.getPageBadMovie(userId, pageable);
         return ResponseUtils.success(responseDto);
     }
 
@@ -73,7 +73,7 @@ public class BadController {
      * 사용자가 좋아요를 누른 리뷰 조회
      */
     @GetMapping("/reviews/users/{userId}")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<ReactionReviewResponseDto>>>> getPageGoodReview(
+    public ResponseEntity<DataResponseDto<PageResponseDto<ReactionReviewResponseDto>>> getPageGoodReview(
         @PathVariable Long userId,
         @RequestParam(required = false, defaultValue = "1") int page,
         @RequestParam(required = false, defaultValue = "10") int size,
@@ -81,7 +81,7 @@ public class BadController {
         @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<ReactionReviewResponseDto>> responseDto = badService.getPageBadReview(userId, pageable);
+        PageResponseDto<ReactionReviewResponseDto> responseDto = badService.getPageBadReview(userId, pageable);
         return ResponseUtils.success(responseDto);
     }
 
@@ -89,7 +89,7 @@ public class BadController {
      * 사용자가 좋아요를 누른 게시물 조회
      */
     @GetMapping("/boards/users/{userId}")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<ReactionBoardResponseDto>>>> getPageGoodBoard(
+    public ResponseEntity<DataResponseDto<PageResponseDto<ReactionBoardResponseDto>>> getPageGoodBoard(
         @PathVariable Long userId,
         @RequestParam(required = false, defaultValue = "1") int page,
         @RequestParam(required = false, defaultValue = "10") int size,
@@ -97,7 +97,7 @@ public class BadController {
         @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<ReactionBoardResponseDto>> responseDto = badService.getPageBadBoard(userId, pageable);
+        PageResponseDto<ReactionBoardResponseDto> responseDto = badService.getPageBadBoard(userId, pageable);
         return ResponseUtils.success(responseDto);
     }
 
@@ -105,7 +105,7 @@ public class BadController {
      * 사용자가 좋아요를 누른 댓글 조회
      */
     @GetMapping("/comments/users/{userId}")
-    public ResponseEntity<DataResponseDto<PageResponseDto<List<ReactionCommentResponseDto>>>> getPageGoodComment(
+    public ResponseEntity<DataResponseDto<PageResponseDto<ReactionCommentResponseDto>>> getPageGoodComment(
         @PathVariable Long userId,
         @RequestParam(required = false, defaultValue = "1") int page,
         @RequestParam(required = false, defaultValue = "10") int size,
@@ -113,7 +113,7 @@ public class BadController {
         @RequestParam(required = false, defaultValue = "false") boolean isAsc
     ) {
         Pageable pageable = PageUtils.of(page, size, sortBy, isAsc);
-        PageResponseDto<List<ReactionCommentResponseDto>> responseDto = badService.getPageBadComment(userId, pageable);
+        PageResponseDto<ReactionCommentResponseDto> responseDto = badService.getPageBadComment(userId, pageable);
         return ResponseUtils.success(responseDto);
     }
 

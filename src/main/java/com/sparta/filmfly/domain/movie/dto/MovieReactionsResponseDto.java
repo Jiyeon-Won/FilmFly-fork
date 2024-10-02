@@ -14,6 +14,7 @@ public class MovieReactionsResponseDto {
     private String originalTitle;
     private String posterPath;
     private String backdropPath;
+    private Double popularity;
     private Long goodCount;
     private Long badCount;
 

@@ -29,10 +29,10 @@
     .container {
       width: 1000px; /* 원하는 고정 크기로 설정 */
       max-width: 1000px; /* 최대 크기를 고정 크기와 동일하게 설정 */
-      height: 1800px;
+      height: auto;
       margin: 0 auto; /* 중앙 정렬 */
       padding: 0;
-      overflow: hidden;
+      overflow: visible;
       padding-bottom: 50px;
     }
     .card{
@@ -275,7 +275,7 @@
       font-weight: bold;
     }
 
-    .modal-body .btn-check:checked + label {
+    .modal-body .btn-check:checked + label{
       background-color: #00d1b2;
       border-color: #00d1b2;
       color: #ffffff;
@@ -290,7 +290,7 @@
       transition: all 0.3s ease-in-out;
     }
 
-    .modal-body .btn-outline-light:hover {
+    .modal-body .btn-outline-light:hover{
       background-color: #00d1b2;
       color: #ffffff;
     }
@@ -401,61 +401,63 @@
         <div>
           <p>장르</p>
           <div id="genre-box" class="d-flex flex-wrap gap-2">
-            <input type="checkbox" class="btn-check" id="btn-check-outlined1" autocomplete="off" name="genre" value="28">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined1" autocomplete="off" name="genre" value="20">
             <label class="btn btn-outline-light" for="btn-check-outlined1">액션</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined2" autocomplete="off" name="genre" value="12">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined2" autocomplete="off" name="genre" value="21">
             <label class="btn btn-outline-light" for="btn-check-outlined2">모험</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined3" autocomplete="off" name="genre" value="16">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined3" autocomplete="off" name="genre" value="22">
             <label class="btn btn-outline-light" for="btn-check-outlined3">애니메이션</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined4" autocomplete="off" name="genre" value="35">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined4" autocomplete="off" name="genre" value="23">
             <label class="btn btn-outline-light" for="btn-check-outlined4">코미디</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined5" autocomplete="off" name="genre" value="80">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined5" autocomplete="off" name="genre" value="24">
             <label class="btn btn-outline-light" for="btn-check-outlined5">범죄</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined6" autocomplete="off" name="genre" value="99">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined6" autocomplete="off" name="genre" value="25">
             <label class="btn btn-outline-light" for="btn-check-outlined6">다큐멘터리</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined7" autocomplete="off" name="genre" value="18">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined7" autocomplete="off" name="genre" value="26">
             <label class="btn btn-outline-light" for="btn-check-outlined7">드라마</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined8" autocomplete="off" name="genre" value="10751">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined8" autocomplete="off" name="genre" value="27">
             <label class="btn btn-outline-light" for="btn-check-outlined8">가족</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined9" autocomplete="off" name="genre" value="14">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined9" autocomplete="off" name="genre" value="28">
             <label class="btn btn-outline-light" for="btn-check-outlined9">판타지</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined10" autocomplete="off" name="genre" value="36">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined10" autocomplete="off" name="genre" value="29">
             <label class="btn btn-outline-light" for="btn-check-outlined10">역사</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined11" autocomplete="off" name="genre" value="27">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined11" autocomplete="off" name="genre" value="30">
             <label class="btn btn-outline-light" for="btn-check-outlined11">공포</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined12" autocomplete="off" name="genre" value="10402">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined12" autocomplete="off" name="genre" value="31">
             <label class="btn btn-outline-light" for="btn-check-outlined12">음악</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined13" autocomplete="off" name="genre" value="9648">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined13" autocomplete="off" name="genre" value="32">
             <label class="btn btn-outline-light" for="btn-check-outlined13">미스터리</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined14" autocomplete="off" name="genre" value="10749">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined14" autocomplete="off" name="genre" value="33">
             <label class="btn btn-outline-light" for="btn-check-outlined14">로맨스</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined15" autocomplete="off" name="genre" value="878">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined15" autocomplete="off" name="genre" value="34">
             <label class="btn btn-outline-light" for="btn-check-outlined15">SF</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined16" autocomplete="off" name="genre" value="10770">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined16" autocomplete="off" name="genre" value="35">
             <label class="btn btn-outline-light" for="btn-check-outlined16">영화</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined17" autocomplete="off" name="genre" value="53">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined17" autocomplete="off" name="genre" value="36">
             <label class="btn btn-outline-light" for="btn-check-outlined17">스릴러</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined18" autocomplete="off" name="genre" value="10752">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined18" autocomplete="off" name="genre" value="37">
             <label class="btn btn-outline-light" for="btn-check-outlined18">전쟁</label>
-            <input type="checkbox" class="btn-check" id="btn-check-outlined19" autocomplete="off" name="genre" value="37">
+            <input type="checkbox" class="btn-check" id="btn-check-outlined19" autocomplete="off" name="genre" value="38">
             <label class="btn btn-outline-light" for="btn-check-outlined19">서부</label>
           </div>
         </div>
         <div>
           <div id="adult">등급</div>
           <div class="d-flex flex-wrap gap-2">
-            <input type="checkbox" class="btn-check" id="searchOption1" autocomplete="off" name="adult" value="0">
-            <label class="btn btn-outline-light" for="searchOption1">19세 미만</label>
-            <input type="checkbox" class="btn-check" id="searchOption2" autocomplete="off" name="adult" value="1">
-            <label class="btn btn-outline-light" for="searchOption2">19세 이상</label>
+              <input type="radio" class="btn-check" name="adult" id="searchOption1" autocomplete="off" value="0" checked>
+              <label class="btn btn-outline-success" for="searchOption1">19세 미만</label>
+              <input type="radio" class="btn-check" name="adult" id="searchOption2" autocomplete="off" value="1">
+              <label class="btn btn-outline-success" for="searchOption2">19세 이상</label>
           </div>
         </div>
         <div class="mb-3">
           <label for="releaseDateFrom" class="form-label">개봉일</label>
           <div class="input-group">
-            <input type="date" class="form-control" id="releaseDateFrom" name="releaseDateFrom">
+            <input type="date" class="form-control" id="releaseDateFrom" name="releaseDateFrom"
+                   value="1960-01-01" min="1960-01-01">
             <span class="input-group-text" id="fromLabel">부터</span>
-            <input type="date" class="form-control" id="releaseDateTo" name="releaseDateTo">
+            <input type="date" class="form-control" id="releaseDateTo" name="releaseDateTo"
+                   value="2024-12-31" min="1960-01-01">
             <span class="input-group-text" id="toLabel">까지</span>
           </div>
         </div>
@@ -468,115 +470,214 @@
 </div>
 
 <script>
+  let lastPopularity = null;
+  let lastMovies = [];  // 중복된 영화는 제외
+  let isLoading = false;  // 중복 요청 방지 플래그
+  let hasNext = true;
   $(document).ready(function () {
-    loadMovies(1);
+    // 첫 번째 영화 데이터 로드
+    loadMovies(lastPopularity);
 
+    // 검색 버튼 클릭 시 새로운 영화 데이터를 로드
     $('#btnMovieSearch').on('click', function () {
-      loadMovies(1);
+      lastPopularity = null;
+      hasNext = true;  // 검색 시 다음 페이지 여부 초기화
+      lastMovies = [];
+      $('#movie-box').empty();  // 기존 영화 데이터를 제거
+      loadMovies(lastPopularity);  // 새로운 데이터를 로드
     });
 
+    // 영화 클릭 시 해당 영화의 상세 페이지로 이동
     $('#movie-box').on('click', '.col', function () {
       let movieId = $(this).attr('data-movie-id');
       location.href = `movie-detail.html?movie=${movieId}`;
     });
 
-    function loadMovies(page, queryString = '') {
-      let searchText = $('#inputMovieSearch').val();
-      let selectedGenres = [];
-      $('input[name="genre"]:checked').each(function() {
-        selectedGenres.push($(this).val());
-      });
-      let adults = [];
-      $('input[name="adult"]:checked').each(function() {
-        adults.push($(this).val());
-      });
-      let releaseDateFrom = $('#releaseDateFrom').val();
-      let releaseDateTo = $('#releaseDateTo').val();
+    // function renderPagination(totalPages, currentPage) {
+    //   const pagination = $('#pagination-movies');
+    //   pagination.empty();
+    //
+    //   const maxVisiblePages = 10;
+    //   let startPage = Math.floor((currentPage - 1) / maxVisiblePages) * maxVisiblePages + 1;
+    //   let endPage = startPage + maxVisiblePages - 1;
+    //
+    //   if (endPage > totalPages) {
+    //     endPage = totalPages;
+    //   }
+    //
+    //   const previousPageSet = Math.max(startPage - maxVisiblePages, 1);
+    //   const nextPageSet = Math.min(startPage + maxVisiblePages, totalPages);
+    //
+    //   pagination.append(`<button class="btn btn-outline-light" data-page="${previousPageSet}">이전</button>`);
+    //
+    //   for (let i = startPage; i <= endPage; i++) {
+    //     const button = $('<button>')
+    //             .addClass('btn btn-outline-light')
+    //             .text(i)
+    //             .data('page', i);
+    //
+    //     if (i === currentPage) {
+    //       button.addClass('active');
+    //     }
+    //
+    //     pagination.append(button);
+    //   }
+    //
+    //   pagination.append(`<button class="btn btn-outline-light" data-page="${nextPageSet}">다음</button>`);
+    // }
+    //
+    // $(document).on('click', '.pagination button', function () {
+    //   const page = $(this).data('page');
+    //
+    //   // 현재 스크롤 위치를 저장
+    //   const currentScrollPosition = $(window).scrollTop();
+    //
+    //   loadMovies(page);
+    //
+    //   // 스크롤 위치를 다시 복원
+    //   $(window).scrollTop(currentScrollPosition);
+    // });
+  });
 
-      let queryParams = new URLSearchParams({
-        search: searchText,
-        releaseDateFrom: releaseDateFrom,
-        releaseDateTo: releaseDateTo
-      });
+  // 영화 데이터를 서버에서 로드하는 함수
+  function loadMovies(popularity, queryString = '') {
+    if (!hasNext) return;  // hasNext가 false면 요청 중단
+    let searchText = $('#inputMovieSearch').val();
+    let selectedGenres = [];
+    $('input[name="genre"]:checked').each(function() {
+      selectedGenres.push($(this).val());
+    });
+    let adults = [];
+    $('input[name="adult"]:checked').each(function() {
+      adults.push($(this).val());
+    });
+    let releaseDateFrom = $('#releaseDateFrom').val();
+    let releaseDateTo = $('#releaseDateTo').val();
 
-      selectedGenres.forEach(genreId => queryParams.append('genreIds', genreId));
-      adults.forEach(adult => queryParams.append('adults', adult));
-
-      apiModule.GET(`/movies?page=${page}&${queryParams.toString()}`,
-              function (result) {
-                $('#movie-box').empty();
-                result.data.data.forEach(movie => {
-                  const movieHtml = `
-                        <div class="col" data-movie-id="${movie.id}">
-                          <div class="card h-100 neon-border">
-                            <img src="${imageUrl}${movie.posterPath}" class="card-img-top" alt="영화 포스터">
-                            <div class="card-body">
-                              <h5 class="card-title">${movie.title}</h5>
-                            </div>
-                            <div class="card-stats">
-                              <span><i class="fa fa-thumbs-up"></i> ${movie.goodCount}</span>
-                              <span><i class="fa fa-thumbs-down"></i> ${movie.badCount}</span>
-                            </div>
-                          </div>
-                        </div>
-                        `;
-                  $('#movie-box').append(movieHtml);
-                });
-
-                renderPagination(result.data.totalPages, page);
-              },
-              function (xhr, status, error) {
-                alert('영화 데이터 가져오기 실패');
-              });
-    }
-
-    function renderPagination(totalPages, currentPage) {
-      const pagination = $('#pagination-movies');
-      pagination.empty();
-
-      const maxVisiblePages = 10;
-      let startPage = Math.floor((currentPage - 1) / maxVisiblePages) * maxVisiblePages + 1;
-      let endPage = startPage + maxVisiblePages - 1;
-
-      if (endPage > totalPages) {
-        endPage = totalPages;
-      }
-
-      const previousPageSet = Math.max(startPage - maxVisiblePages, 1);
-      const nextPageSet = Math.min(startPage + maxVisiblePages, totalPages);
-
-      pagination.append(`<button class="btn btn-outline-light" data-page="${previousPageSet}">이전</button>`);
-
-      for (let i = startPage; i <= endPage; i++) {
-        const button = $('<button>')
-                .addClass('btn btn-outline-light')
-                .text(i)
-                .data('page', i);
-
-        if (i === currentPage) {
-          button.addClass('active');
-        }
-
-        pagination.append(button);
-      }
-
-      pagination.append(`<button class="btn btn-outline-light" data-page="${nextPageSet}">다음</button>`);
-    }
-
-    $(document).on('click', '.pagination button', function () {
-      const page = $(this).data('page');
-
-      // 현재 스크롤 위치를 저장
-      const currentScrollPosition = $(window).scrollTop();
-
-      loadMovies(page);
-
-      // 스크롤 위치를 다시 복원
-      $(window).scrollTop(currentScrollPosition);
+    // 쿼리 파라미터 설정
+    let queryParams = new URLSearchParams({
+      search: searchText,
+      releaseDateFrom: releaseDateFrom,
+      releaseDateTo: releaseDateTo
     });
 
+    // 선택된 장르와 등급을 쿼리 파라미터에 추가
+    selectedGenres.forEach(genreId => queryParams.append('genreIds', genreId));
+    adults.forEach(adult => queryParams.append('adults', adult));
+
+    let endPoint = `/movies?${queryParams.toString()}`;
+    if (popularity !== null) {
+      endPoint += `&lastPopularity=${popularity}`;
+    }
+
+    // 서버로부터 영화 데이터를 GET 요청
+    apiModule.GET(endPoint,
+        function (result) {
+          let movieCount = 0;
+
+          // 영화 데이터를 페이지에 추가
+          result.data.data.forEach(movie => {
+            // 마지막 5개의 movieId와 popularity를 저장한 배열과 중복되는지 확인
+            let isDuplicate = false;
+            for (let i = 0; i < lastMovies.length; i++) {
+              if (lastMovies[i].id === movie.id && lastMovies[i].popularity === movie.popularity) {
+                console.log("중복된 영화: ", movie.id, movie.title);
+                isDuplicate = true;
+                break;
+              }
+            }
+
+            // 중복된 영화는 건너뜀
+            if (isDuplicate) {
+              return;
+            }
+
+            if (movieCount >= 20) {
+              return;
+            }
+
+            let movieImg = imageUrl + movie.posterPath;
+            if (!movie.posterPath) {
+              movieImg = imageUrl + (movie.backdropPath || '../images/profileImg.png');
+            }
+            const movieHtml = `
+                <div class="col" data-movie-id="${movie.id}">
+                  <div class="card h-100 neon-border">
+                    <img src="${movieImg}" class="card-img-top" alt="영화 포스터">
+                    <div class="card-body">
+                      <h5 class="card-title">${movie.title}</h5>
+                    </div>
+                    <div class="card-stats">
+                      <span><i class="fa fa-thumbs-up"></i> ${movie.goodCount}</span>
+                      <span><i class="fa fa-thumbs-down"></i> ${movie.badCount}</span>
+                    </div>
+                  </div>
+                </div>
+                `;
+            $('#movie-box').append(movieHtml);
+
+            ++movieCount;
+          });
+
+          hasNext = result.data.hasNext;
+
+          // 마지막 영화의 ID를 업데이트
+          if (result.data.data.length > 0) {
+            lastMovies = result.data.data.slice(-5).map(movie => ({
+              id: movie.id,
+              popularity: movie.popularity
+            }));
+            lastPopularity = result.data.data[result.data.data.length - 1].popularity;
+            isLoading = false;
+          }
+        },
+        function (xhr, status, error) {
+          isLoading = false;
+          alert('영화 데이터 가져오기 실패');
+        });
+
+    // 페이징 기반 URL
+    // apiModule.GET(`/movies?page=${page}&${queryParams.toString()}`,
+    //         function (result) {
+    //           $('#movie-box').empty();
+    //           result.data.data.forEach(movie => {
+    //             let movieImg = imageUrl + movie.posterPath;
+    //             if (!movie.posterPath) {
+    //               movieImg = imageUrl + movie.backdropPath || '../images/profileImg.png';
+    //             }
+    //             const movieHtml = `
+    //                   <div class="col" data-movie-id="${movie.id}">
+    //                     <div class="card h-100 neon-border">
+    //                       <img src="${movieImg}" class="card-img-top" alt="영화 포스터">
+    //                       <div class="card-body">
+    //                         <h5 class="card-title">${movie.title}</h5>
+    //                       </div>
+    //                       <div class="card-stats">
+    //                         <span><i class="fa fa-thumbs-up"></i> ${movie.goodCount}</span>
+    //                         <span><i class="fa fa-thumbs-down"></i> ${movie.badCount}</span>
+    //                       </div>
+    //                     </div>
+    //                   </div>
+    //                   `;
+    //             $('#movie-box').append(movieHtml);
+    //           });
+    //
+    //           renderPagination(result.data.totalPages, page);
+    //         },
+    //         function (xhr, status, error) {
+    //           alert('영화 데이터 가져오기 실패');
+    //         });
+  }
+
+  $(window).scroll(function(){
+    if($(window).scrollTop() + 200 >= $(document).height() - $(window).height()) {
+      console.log("isLoading, hasNext", isLoading + ", " + hasNext);
+      if(!isLoading && hasNext) {
+        isLoading = true; //실행 불가능 상태로 변경
+        loadMovies(lastPopularity);
+      }
+    }
   });
- ;
 </script>
 </body>
 </html>

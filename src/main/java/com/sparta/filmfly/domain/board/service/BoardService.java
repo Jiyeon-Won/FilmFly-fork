@@ -1,27 +1,29 @@
 package com.sparta.filmfly.domain.board.service;
 
-import com.sparta.filmfly.domain.board.dto.*;
+import com.sparta.filmfly.domain.board.dto.BoardPageDto;
+import com.sparta.filmfly.domain.board.dto.BoardReactionResponseDto;
+import com.sparta.filmfly.domain.board.dto.BoardRequestDto;
+import com.sparta.filmfly.domain.board.dto.BoardResponseDto;
+import com.sparta.filmfly.domain.board.dto.BoardUpdateResponseDto;
 import com.sparta.filmfly.domain.board.entity.Board;
 import com.sparta.filmfly.domain.board.repository.BoardRepository;
+import com.sparta.filmfly.domain.file.etc.MediaTypeEnum;
 import com.sparta.filmfly.domain.file.service.FileService;
-import com.sparta.filmfly.domain.media.entity.MediaTypeEnum;
 import com.sparta.filmfly.domain.reaction.ReactionContentTypeEnum;
 import com.sparta.filmfly.domain.reaction.dto.ReactionCheckResponseDto;
 import com.sparta.filmfly.domain.reaction.service.BadService;
 import com.sparta.filmfly.domain.reaction.service.GoodService;
-import com.sparta.filmfly.domain.review.dto.ReviewUserResponseDto;
 import com.sparta.filmfly.domain.user.entity.User;
 import com.sparta.filmfly.domain.user.entity.UserRoleEnum;
 import com.sparta.filmfly.global.auth.UserDetailsImpl;
 import com.sparta.filmfly.global.common.response.PageResponseDto;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -75,15 +77,15 @@ public class BoardService {
     /**
      * 보드 페이징 조회
      */
-    public PageResponseDto<List<BoardPageDto>> getPageBoard(Long filterGoodCount, Long filterHits, String search, Pageable pageable) {
+    public PageResponseDto<BoardPageDto> getPageBoard(Long filterGoodCount, Long filterHits, String search, Pageable pageable) {
         return boardRepository.findAllWithFilters(pageable, filterGoodCount, filterHits, search);
     }
 
     /**
      * 유저의 보드 조회
      */
-    public PageResponseDto<List<BoardPageDto>> getUsersBoard(UserDetailsImpl userDetails, Long userId, Pageable pageable) {
-        PageResponseDto<List<BoardPageDto>> pageBoard = boardRepository.findAllByUserId(userId, pageable);
+    public PageResponseDto<BoardPageDto> getUsersBoard(UserDetailsImpl userDetails, Long userId, Pageable pageable) {
+        PageResponseDto<BoardPageDto> pageBoard = boardRepository.findAllByUserId(userId, pageable);
 
         if (userDetails != null) {
             List<BoardPageDto> boards = pageBoard.getData();
@@ -160,5 +162,11 @@ public class BoardService {
      */
     public long getBoardCount() {
         return boardRepository.count();
+    }
+
+    @Transactional(readOnly = true)
+    public List<BoardResponseDto> getBoardsRecent() {
+        int limit = 20;
+        return boardRepository.findBoardsRecent(limit);
     }
 }

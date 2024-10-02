@@ -383,26 +383,12 @@
         </div>
     </div>
 
-    <!-- 추천 영화 -->
-    <div class="my-4">
-        <h3 class="section-title" id="movie-recommend-title">추천 영화</h3>
-        <div class="carousel">
-            <div class="carousel-controls">
-                <button class="carousel-control" id="prev-button-movie"><i class="fa fa-chevron-left"></i></button>
-                <button class="carousel-control" id="next-button-movie"><i class="fa fa-chevron-right"></i></button>
-            </div>
-            <div class="carousel-track" id="movie-carousel">
-                <!-- 영화 아이템들 -->
-            </div>
-        </div>
-    </div>
-
     <!-- 최신 리뷰 -->
     <div class="my-4">
         <h3 class="section-title">최신 리뷰
-            <span class="random-color-button" onclick="location.href='../html/review.html'">
-                <i class="fas fa-arrow-right"></i>
-            </span>
+<!--            <span class="random-color-button" onclick="location.href='../html/review.html'">-->
+<!--                <i class="fas fa-arrow-right"></i>-->
+<!--            </span>-->
         </h3>
         <div class="carousel">
             <div class="carousel-controls">
@@ -441,28 +427,61 @@
 
 <script>
     $(document).ready(function () {
-        /* 데이터 로딩 및 카로셀 구성 */
-        function loadCarouselData(endpoint, carouselId, titleId, itemType, isRanking = false) {
-            apiModule.GET(endpoint,
-                function (response) {
-                    const dataList = response.data.data || response.data;
-                    if (titleId && response.data.name) {
-                        document.getElementById(titleId).textContent = `${response.data.name} 영화! 어떠세요?`;
-                    }
-                    const carousel = document.getElementById(carouselId);
-                    let rank = 1; // 랭킹을 위한 변수
-                    for (const item of dataList) {
-                        const element = document.createElement('div');
-                        element.className = isRanking || itemType === 'movie' ? 'carousel-item' : 'card-item neon-border';
-                        element.innerHTML = isRanking || itemType === 'movie' ?
-                            `
+        const genres = [
+            { id: 20, name: "액션" },         /*28*/
+            { id: 21, name: "모험" },         /*12*/
+            { id: 22, name: "애니메이션" },   /*16*/
+            { id: 23, name: "코미디" },       /*35*/
+            { id: 24, name: "범죄" },         /*80*/
+            { id: 25, name: "다큐멘터리" },   /*99*/
+            { id: 26, name: "드라마" },       /*18*/
+            { id: 27, name: "가족" },      /*10751*/
+            { id: 28, name: "판타지" },       /*14*/
+            { id: 29, name: "역사" },         /*36*/
+            { id: 30, name: "공포" },         /*27*/
+            { id: 31, name: "음악" },      /*10402*/
+            { id: 32, name: "미스터리" },   /*9648*/
+            { id: 33, name: "로맨스" },    /*10749*/
+            { id: 34, name: "SF" },          /*878*/
+            { id: 35, name: "TV 영화" },   /*10770*/
+            { id: 36, name: "스릴러" },       /*53*/
+            { id: 37, name: "전쟁" },      /*10752*/
+            { id: 38, name: "서부" }          /*37*/
+        ];
+        const randomIndex = Math.floor(Math.random() * genres.length);
+        const genre = genres[randomIndex];
+
+        /* 랭킹 섹션 데이터 로딩 */
+        loadCarouselData("/movies/trend", "ranking-carousel", "movie", true);
+        /* 최신 리뷰 및 게시물 데이터 로딩 */
+        loadCarouselData("/reviews/recent", "review-carousel", "review");
+        loadCarouselData("/boards/recent", "post-carousel", "board");
+
+        setupCarouselScroll("movie-carousel", "prev-button-movie", "next-button-movie");
+        setupCarouselScroll("ranking-carousel", "prev-button-ranking", "next-button-ranking");
+        setupCarouselScroll("review-carousel", "review-prev-button", "review-next-button");
+        setupCarouselScroll("post-carousel", "post-prev-button", "post-next-button");
+    });
+
+    /* 데이터 로딩 및 카로셀 구성 */
+    function loadCarouselData(endpoint, carouselId, itemType, isRanking = false) {
+        apiModule.GET(endpoint,
+            function (response) {
+                const dataList = response.data.data || response.data;
+                const carousel = document.getElementById(carouselId);
+                let rank = 1; // 랭킹을 위한 변수
+                for (const item of dataList) {
+                    const element = document.createElement('div');
+                    element.className = isRanking || itemType === 'movie' ? 'carousel-item' : 'card-item neon-border';
+                    element.innerHTML = isRanking || itemType === 'movie' ?
+                        `
                         ${isRanking ? `<div class="ranking-badge">${rank++}</div>` : ''}
-                        <img src="${imageUrl + (item.posterPath || item.moviePosterPath)}" alt="${item.title || item.movieTitle}">
+                        <img src="${imageUrl + (item.posterPath || item.backdropPath)}" alt="${item.title || item.movieTitle}">
                         <div class="carousel-info">
                             <h5>${item.title || item.movieTitle}</h5>
                         </div>
                     ` :
-                            `
+                        `
                         <p class="movie-title">${itemType === 'review' ? item.movieTitle : ''}</p>
                         <h5>${item.title || item.nickname}</h5>
                         <div class="card-stats">
@@ -474,75 +493,47 @@
                         </div>
                     `;
 
-                        if (itemType !== 'movie') { // 영화 섹션이 아닌 경우에만 네온 효과 적용
-                            applyRandomNeonColor(element);
-                        }
-                        carousel.appendChild(element);
-
-                        // 클릭 이벤트 리스너 추가
-                        element.addEventListener('click', function () {
-                            if (itemType === 'review') {
-                                location.href = `../html/review-detail.html?movie=${item.movieId}&review=${item.id}`;
-                            } else {
-                                location.href = `../html/${itemType}-detail.html?${itemType}=${item.id}`;
-                            }
-                        });
+                    if (itemType !== 'movie') { // 영화 섹션이 아닌 경우에만 네온 효과 적용
+                        applyRandomNeonColor(element);
                     }
-                },
-                function (xhr, status, error) {
-                    console.log('데이터 로딩 실패:', error);
+                    carousel.appendChild(element);
+
+                    // 클릭 이벤트 리스너 추가
+                    element.addEventListener('click', function () {
+                        if (itemType === 'review') {
+                            location.href = `../html/review-detail.html?movie=${item.movieId}&review=${item.id}`;
+                        } else {
+                            location.href = `../html/${itemType}-detail.html?${itemType}=${item.id}`;
+                        }
+                    });
                 }
-            );
-        }
-
-
-        /* 추천 영화 섹션 데이터 로딩 */
-        apiModule.GET("/genres",
-            function (response) {
-                const genres = response.data;
-                const randomNum = Math.floor(Math.random() * (genres.length / 2) + (genres.length / 2));
-                const genre = genres[randomNum];
-                document.getElementById('movie-recommend-title').textContent = `${genre.name} 영화! 어떠세요?`;
-                loadCarouselData(`/movies?genreIds=${genre.id}`, "movie-carousel", null, "movie");
             },
             function (xhr, status, error) {
-                console.error('장르 호출 실패');
+                console.log('데이터 로딩 실패:', error);
             }
         );
+    }
 
-        /* 랭킹 섹션 데이터 로딩 */
-        loadCarouselData("/movies/trend", "ranking-carousel", null, "movie", true);
+    /* 카로셀 좌우 스크롤 버튼 동작 */
+    function setupCarouselScroll(carouselId, prevButtonId, nextButtonId) {
+        const carousel = document.getElementById(carouselId);
+        const prevButton = document.getElementById(prevButtonId);
+        const nextButton = document.getElementById(nextButtonId);
 
-        /* 최신 리뷰 및 게시물 데이터 로딩 */
-        loadCarouselData("/reviews", "review-carousel", null, "review");
-        loadCarouselData("/boards", "post-carousel", null, "board");
-
-        /* 카로셀 좌우 스크롤 버튼 동작 */
-        function setupCarouselScroll(carouselId, prevButtonId, nextButtonId) {
-            const carousel = document.getElementById(carouselId);
-            const prevButton = document.getElementById(prevButtonId);
-            const nextButton = document.getElementById(nextButtonId);
-
-            prevButton.addEventListener('click', function () {
-                carousel.scrollBy({
-                    left: -carousel.clientWidth,
-                    behavior: 'smooth'
-                });
+        prevButton.addEventListener('click', function () {
+            carousel.scrollBy({
+                left: -carousel.clientWidth,
+                behavior: 'smooth'
             });
+        });
 
-            nextButton.addEventListener('click', function () {
-                carousel.scrollBy({
-                    left: carousel.clientWidth,
-                    behavior: 'smooth'
-                });
+        nextButton.addEventListener('click', function () {
+            carousel.scrollBy({
+                left: carousel.clientWidth,
+                behavior: 'smooth'
             });
-        }
-
-        setupCarouselScroll("movie-carousel", "prev-button-movie", "next-button-movie");
-        setupCarouselScroll("ranking-carousel", "prev-button-ranking", "next-button-ranking");
-        setupCarouselScroll("review-carousel", "review-prev-button", "review-next-button");
-        setupCarouselScroll("post-carousel", "post-prev-button", "post-next-button");
-    });
+        });
+    }
 
     function applyRandomNeonColor(element) {
         const colors = ['#FF00FF', '#00FFFF', '#FF0000', '#00FF00', '#FFFF00', '#FF00FF', '#FF9900', '#9900FF', '#FF69B4', '#00FF99'];

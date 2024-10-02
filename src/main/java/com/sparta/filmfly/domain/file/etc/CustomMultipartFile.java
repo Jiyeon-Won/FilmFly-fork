@@ -1,4 +1,4 @@
-package com.sparta.filmfly.domain.file.util;
+package com.sparta.filmfly.domain.file.etc;
 
 import org.springframework.web.multipart.MultipartFile;
 

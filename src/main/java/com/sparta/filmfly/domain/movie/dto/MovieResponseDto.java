@@ -1,12 +1,9 @@
 package com.sparta.filmfly.domain.movie.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sparta.filmfly.domain.movie.entity.Movie;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -15,7 +12,6 @@ public class MovieResponseDto {
     private Long id;
     private boolean adult;
     private String backdropPath;
-    private List<Integer> genreIds;
     private String originalLanguage;
     private String originalTitle;
     private String overview;
@@ -24,12 +20,19 @@ public class MovieResponseDto {
     private String releaseDate;
     private String title;
 
+    public MovieResponseDto(Long id, String backdropPath, String originalTitle, String posterPath, String title) {
+        this.id = id;
+        this.backdropPath = backdropPath;
+        this.originalTitle = originalTitle;
+        this.posterPath = posterPath;
+        this.title = title;
+    }
+
     public static MovieResponseDto fromEntity(Movie movie) {
         return MovieResponseDto.builder()
                 .id(movie.getId())
                 .adult(movie.isAdult())
                 .backdropPath(movie.getBackdropPath())
-                .genreIds(movie.getGenreIds())
                 .originalLanguage(movie.getOriginalLanguage())
                 .originalTitle(movie.getOriginalTitle())
                 .overview(movie.getOverview())
