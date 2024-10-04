@@ -86,11 +86,10 @@
 <br/><br/>
 # 🖥️ Troubleshooting
 ## - 도커 컨테이너 간 통신 문제
+https://nicemouse.tistory.com/112
 - Docker Compose를 이용해 Redis와 Spring Boot 애플리케이션을 각각 도커로 띄웠지만, Spring Boot에서는 Redis 연결 오류가 발생
 - Spring Boot와 Redis가 하나의 EC2안에 실행되어 있으니 localhost라고 설정을 해서 문제
 - 컨테이너들을 하나의 네트워크로 연결
-<img src="https://github.com/user-attachments/assets/4112a2be-2f1c-4b93-9c68-025e1e204c40" alt="FilmFlyAPI" style="max-width: 100%;">
-<img src="https://github.com/user-attachments/assets/eaf727f2-8645-40cb-9941-f4a064711f8f" alt="FilmFlyAPI" style="max-width: 100%;">
 
 ## - 인증코드 이메일 발송을 비동식 방식으로 개선
 https://nicemouse.tistory.com/107
