@@ -5,6 +5,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.filmfly.domain.favorite.entity.QFavorite;
 import com.sparta.filmfly.domain.movie.dto.CreditSimpleResponseDto;
@@ -51,8 +52,6 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
         QGood qGood = QGood.good;
         QBad qBad = QBad.bad;
 
-        long start = System.currentTimeMillis();
-
         List<MovieReactionsResponseDto> fetch = queryFactory
             .select(Projections.constructor(MovieReactionsResponseDto.class,
                 qMovie.id,
@@ -80,9 +79,6 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
             .limit(pageable.getPageSize())
             .orderBy(qMovie.popularity.desc(), qMovie.id.asc())
             .fetch();
-
-        long end = System.currentTimeMillis();
-        System.out.println("시간 : " + (end - start));
 
         boolean hasNext = fetch.size() == pageable.getPageSize();
 
@@ -205,9 +201,15 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
         BooleanExpression predicate;
 
         predicate = searchAdults(searchOptions.getAdults(), qMovie);
-        predicate = (predicate == null) ? searchDateRange(searchOptions.getReleaseDateFrom(), searchOptions.getReleaseDateTo(), qMovie) : predicate.and(searchDateRange(searchOptions.getReleaseDateFrom(), searchOptions.getReleaseDateTo(), qMovie));
-        predicate = (predicate == null) ? searchGenres(searchOptions.getGenreIds(), qMovieGenre) : predicate.and(searchGenres(searchOptions.getGenreIds(), qMovieGenre));
-        predicate = (predicate == null) ? searchKeyword(searchOptions.getKeyword(), qMovie) : predicate.and(searchKeyword(searchOptions.getKeyword(), qMovie));
+        predicate = (predicate == null)
+            ? searchDateRange(searchOptions.getReleaseDateFrom(), searchOptions.getReleaseDateTo(), qMovie)
+            : predicate.and(searchDateRange(searchOptions.getReleaseDateFrom(), searchOptions.getReleaseDateTo(), qMovie));
+        predicate = (predicate == null)
+            ? searchGenres(searchOptions.getGenreIds(), qMovieGenre, qMovie)
+            : predicate.and(searchGenres(searchOptions.getGenreIds(), qMovieGenre, qMovie));
+        predicate = (predicate == null)
+            ? searchKeyword(searchOptions.getKeyword(), qMovie)
+            : predicate.and(searchKeyword(searchOptions.getKeyword(), qMovie));
 
         return predicate;
     }
@@ -221,15 +223,19 @@ public class MovieRepositoryImpl implements MovieRepositoryCustom {
         return null;
     }
 
-    private BooleanExpression searchGenres(List<Integer> genreIds, QMovieGenre qMovieGenre) {
+    private BooleanExpression searchGenres(List<Integer> genreIds, QMovieGenre qMovieGenre, QMovie qMovie) {
+        BooleanExpression expression = null;
         if (!genreIds.isEmpty()) {
-            return qMovieGenre.genre.id
-                .in(genreIds.stream()
-                    .map(Long::valueOf)
-                    .toList()
-                );
+            for (Integer genreId : genreIds) {
+                BooleanExpression subquery = JPAExpressions.select(qMovieGenre)
+                    .from(qMovieGenre)
+                    .where(qMovieGenre.movie.id.eq(qMovie.id)
+                        .and(qMovieGenre.genre.id.eq(Long.valueOf(genreId))))
+                    .exists();
+                expression = expression != null ? expression.and(subquery) : subquery;
+            }
         }
-        return null;
+        return expression;
     }
 
     private BooleanExpression searchAdults(List<Integer> adults, QMovie qMovie) {
