@@ -1,15 +1,115 @@
 # 🎞️ FilmFly
  FilmFly는 영화 정보를 제공하고, 사용자가 리뷰를 남기고 소통할 수 있는 서비스입니다.
 
- 다양한 영화 정보와 유저 커뮤니케이션 공간을 제공하여, 사용자들이 더욱 풍부한 영화 경험을 즐길 수 있습니다.
-- ### 영화 정보 제공 및 리뷰 서비스
-    - **영화 정보 제공 :** 영화 제목, 줄거리, 개봉일, 출연진 등 다양한 정보를 제공합니다.
-    - **유저 커뮤니케이션 공간 :** 게시판 및 댓글 기능을 통해 사용자들과 소통하고 의견을 나눌 수 있습니다.
-    - **리뷰 및 평점 :** 사용자가 영화에 대한 평점과 리뷰를 남길 수 있습니다.
-- ### 주요 기술
-    - TMDB API를 통해 최신 영화 정보를 가져옵니다.
-    - 다양한 데이터(이미지, 영상) 소스를 직접 저장(S3), 관리(AWS) 합니다.
-    - 대용량 트래픽 관리, 쿼리 최적화 등을 통해 쾌적한 서버 환경을 제공합니다.
+
+<br/><br/>
+# 🗓️ 프로젝트 기간
+### 2024.07.18 ~ 2024.08.16
+
+
+<br/><br/>
+# 🪪 팀원 / 역할분담
+### 팀명 : Reviewers
+<details>
+    <summary>원지연 <b>(팀장)</b></summary>
+    <ul>
+        <li>리뷰, 좋아요, 싫어요</li>
+        <li>프론트 전반적인 틀 작업</li>
+        <li>CloudFront, S3 연결</li>
+        <li>더미 데이터 제작 - credit, genre, movieCredit, movieGenrelds 등등.. </li>
+    </ul>
+</details>
+<details>
+    <summary>백원하 <b>(부팀장)</b></summary> 
+    <ul>
+        <li>영화, 보관함, 찜, 배우, 장</li>
+        <li>TMDB API 를 활용해 관리자용 데이터 크롤링</li>
+        <li>프로젝트 RDS 연동</li>
+        <li>Github Actions, Docker, EC2 연동</li>
+        <li>(프론트) - 메인 페이지 제작 및 백엔드 연동 및 추가 api 구현</li>
+    </ul>
+</details>
+<details>
+      <summary>이은규</summary>
+      <ul>
+        <li>시큐리티, 사용자 기능, 신고, 차단</li>
+        <li>소셜 로그인</li>
+        <li>이메일 인증</li>
+        <li>(프론트) - 관리자 페이지 제작, UI 최종 디자인 수정</li>
+      </ul>
+</details>
+
+<details>
+        <summary>한호진</summary> 
+        <ul>
+            <li>운영보드, 쿠폰</li>
+            <li>좋아요, 싫어요 코드 추가 기능 개발</li>
+            <li>(프론트) - 유저가 갖고 있는 쿠폰, 마이페이지 작업</li>
+        </ul>
+</details>
+<details>
+        <summary>강준모</summary> 
+        <ul>
+            <li>게시판, 댓글</li>
+            <li>썸머노트 연동 게시판 작업, S3 이미지 관리</li>
+            <li>운영 게시판, 보관함 추가 기능 개발</li>
+            <li>더미 데이터 제작 - 유저, 블락, 영화 보관함, 찜하기, 좋아요, 싫어요, 게시글, 댓글, 리뷰</li>
+            <li>(프론트) - 유저의 게시글, 댓글, 리뷰, 찜, 보관함, 영화 페이지 보관함 기능</li>
+        </ul>
+</details>
+
+
+<br/><br/>
+# ⚙️ 기술 스택
+
+| **분류**        | **기술**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **IDE**       | <img src="https://img.shields.io/badge/IntelliJ_IDEA-000000?style=for-the-badge&logo=intellijidea&logoColor=white">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **Framework** | <img src="https://img.shields.io/badge/springboot(3.3.1)-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **Language**  | <img src="https://img.shields.io/badge/java(JDK17)-007396?style=for-the-badge&logo=OpenJDK&logoColor=white">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **Database**  | <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"> <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **Tools**     | <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **Server**    | <img src="https://img.shields.io/badge/Amazon%20EC2-FF9900?style=for-the-badge&logo=Amazon%20EC2&logoColor=white"> <img src="https://img.shields.io/badge/Amazon%20S3-569A31?style=for-the-badge&logo=Amazon%20S3&logoColor=white"> <img src="https://img.shields.io/badge/Amazon%20RDS-527FFF.svg?style=for-the-badge&logo=Amazon-RDS&logoColor=white"> <img src="https://img.shields.io/badge/Amazon%20CloudFront-FF4F8B.svg?style=for-the-badge&logo=Amazon-CloudWatch&logoColor=white">  <br/> <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white"> <img src="https://img.shields.io/badge/ElastiCache-005571?style=for-the-badge&logo=Elasticsearch&logoColor=white"> <img src="https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white"> <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white"> |
+| **Front**     | <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=HTML5&logoColor=white"> <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=CSS3&logoColor=white"> <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white"> <img src="https://img.shields.io/badge/jQuery-0769AD.svg?style=for-the-badge&logo=jQuery&logoColor=white">                                                                                                                                                                                                                                                                                                             |
+
+
+<br/><br/>
+# 🎨 ERD
+<img src="https://github.com/user-attachments/assets/a68fdd74-435f-4905-861d-56ce5254ff37" alt="FilmFlyERD" style="max-width: 100%;">
+
+
+<br/><br/>
+# 🖥️ Project Architecture
+<img src="https://github.com/user-attachments/assets/9a866157-3e9d-406d-9a6c-d05dfc3782d8" alt="FilmFly-아키텍처" style="max-width: 100%;">
+
+
+<br/><br/>
+# 🖥️ Troubleshooting
+## - 도커 컨테이너 간 통신 문제
+- Docker Compose를 이용해 Redis와 Spring Boot 애플리케이션을 각각 도커로 띄웠지만, Spring Boot에서는 Redis 연결 오류가 발생
+- Spring Boot와 Redis가 하나의 EC2안에 실행되어 있으니 localhost라고 설정을 해서 문제
+- 컨테이너들을 하나의 네트워크로 연결
+<img src="https://github.com/user-attachments/assets/4112a2be-2f1c-4b93-9c68-025e1e204c40" alt="FilmFlyAPI" style="max-width: 100%;">
+<img src="https://github.com/user-attachments/assets/eaf727f2-8645-40cb-9941-f4a064711f8f" alt="FilmFlyAPI" style="max-width: 100%;">
+
+## - 인증코드 이메일 발송을 비동식 방식으로 개선
+https://nicemouse.tistory.com/107
+- 이메일 전송 작업으로 인해 약 3~4초 동안 사용자에게 응답이 지연되는 문제 발생
+- @Async와 CompletableFuture을 사용해 비동기 방식으로 변경
+- 3671ms → 32ms 시간 단축
+## - 인덱스를 활용하여 조회 성능 개선
+https://nicemouse.tistory.com/110
+- 영화 72만개, 좋아요 1180만개 정도 넣으니 쿼리 속도가 20분이 넘음
+- explain & explain analyze을 활용해서 쿼리 분석 후
+  커버링 인덱스 & fulltext index & No Offset 페이징 적용
+- 32258ms → 208ms 시간 단축
+
+
+<br/><br/>
+# 📋 API 명세서
+<img src="https://github.com/user-attachments/assets/8566c881-7a28-4061-b59a-a176d47c1538" alt="FilmFlyAPI" style="max-width: 100%;">
+[API Page](https://www.notion.so/881c458a10c5490596763ab364969407?v=ebdbcfe22004485d833995bdaed92ac3)
+
 
 <br/><br/>
 # 🖼️ 프로젝트 상세 이미지
@@ -96,104 +196,6 @@
 <img src="https://github.com/user-attachments/assets/60d86650-9866-4dee-aee1-59ab948308ec" alt="" style="max-width: 100%;">
 </details>
 🙏🙏🤝🎉✨🎟️🎫🎁🖼️🎨🛠️⚙️🖥️💻🪪🎥🎬📽️📺✏️🗓️📋📌
-
-<br/><br/>
-# 🗓️ 프로젝트 기간
-### 2024.07.18 ~ 2024.08.16
-
-<br/><br/>
-# ⚙️ 기술 스택
-
-| **분류**   | **기술**                                                                                           |
-|------------|--------------------------------------------------------------------------------------------------|
-| **IDE**    | <img src="https://img.shields.io/badge/IntelliJ_IDEA-000000?style=for-the-badge&logo=intellijidea&logoColor=white"> |
-| **Framework** | <img src="https://img.shields.io/badge/springboot(3.3.1)-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=Spring Security&logoColor=white">|
-| **Language** | <img src="https://img.shields.io/badge/java(JDK17)-007396?style=for-the-badge&logo=OpenJDK&logoColor=white"> |
-| **Database** | <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"> <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white"> |
-| **Tools**   | <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"> <br/><img src="https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white"> <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white"> |
-| **Cloud**   | <img src="https://img.shields.io/badge/Amazon%20EC2-FF9900?style=for-the-badge&logo=Amazon%20EC2&logoColor=white"> <img src="https://img.shields.io/badge/Amazon%20S3-569A31?style=for-the-badge&logo=Amazon%20S3&logoColor=white"> <img src="https://img.shields.io/badge/Amazon%20RDS-527FFF.svg?style=for-the-badge&logo=Amazon-RDS&logoColor=white"> <img src="https://img.shields.io/badge/Amazon%20CloudFront-FF4F8B.svg?style=for-the-badge&logo=Amazon-CloudWatch&logoColor=white">  <br/> <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white"> <img src="https://img.shields.io/badge/ElastiCache-005571?style=for-the-badge&logo=Elasticsearch&logoColor=white">|
-| **Front**   | <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=HTML5&logoColor=white"> <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=CSS3&logoColor=white"> <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white"> <img src="https://img.shields.io/badge/jQuery-0769AD.svg?style=for-the-badge&logo=jQuery&logoColor=white">|
-
-<br/><br/>
-# 🖥️ Project Architecture
-<details>
-    <summary>Architecture</summary>
-    <img src="https://github.com/user-attachments/assets/503b186e-6b1d-4cac-bc8d-5eda3d3885d6" alt="FilmFly-아키텍처" style="max-width: 100%;">
-</details>
-
-<br/><br/>
-# 🪪 팀원 / 역할분담   (본인들이 알아서 추가, 수정 할 것)
-### 팀명 : Reviewers
-<details>
-    <summary>원지연 <b>(팀장)</b></summary>
-    <ul>
-        <li>리뷰, 좋아요, 싫어요</li>
-        <li>프론트 전반적인 틀 작업</li>
-        <li>CloudFront, S3 연결</li>
-        <li>더미 데이터 제작 - credit, genre, movieCredit, movieGenrelds 등등.. </li>
-    </ul>
-</details>
-<details>
-    <summary>백원하 <b>(부팀장)</b></summary> 
-    <ul>
-        <li>영화, 보관함, 찜, 배우, 장</li>
-        <li>TMDB API 를 활용해 관리자용 데이터 크롤링</li>
-        <li>프로젝트 RDS 연동</li>
-        <li>Github Actions, Docker, EC2 연동</li>
-        <li>(프론트) - 메인 페이지 제작 및 백엔드 연동 및 추가 api 구현</li>
-    </ul>
-</details>
-<details>
-      <summary>이은규</summary>
-      <ul>
-        <li>시큐리티, 사용자 기능, 신고, 차단</li>
-        <li>소셜 로그인</li>
-        <li>이메일 인증</li>
-        <li>(프론트) - 관리자 페이지 제작, UI 최종 디자인 수정</li>
-      </ul>
-</details>
-
-<details>
-        <summary>한호진</summary> 
-        <ul>
-            <li>운영보드, 쿠폰</li>
-            <li>좋아요, 싫어요 코드 추가 기능 개발</li>
-            <li>(프론트) - 유저가 갖고 있는 쿠폰, 마이페이지 작업</li>
-        </ul>
-</details>
-<details>
-        <summary>강준모</summary> 
-        <ul>
-            <li>게시판, 댓글</li>
-            <li>썸머노트 연동 게시판 작업, S3 이미지 관리</li>
-            <li>운영 게시판, 보관함 추가 기능 개발</li>
-            <li>더미 데이터 제작 - 유저, 블락, 영화 보관함, 찜하기, 좋아요, 싫어요, 게시글, 댓글, 리뷰</li>
-            <li>(프론트) - 유저의 게시글, 댓글, 리뷰, 찜, 보관함, 영화 페이지 보관함 기능</li>
-        </ul>
-</details>
-
-
-<br/><br/>
-# 🎨 ERD, 와이어프레임
-<details>
-    <summary>ERD</summary>
-    <img src="https://github.com/user-attachments/assets/a68fdd74-435f-4905-861d-56ce5254ff37" alt="FilmFlyERD" style="max-width: 100%;">
-</details>
-
-<details>
-    <summary>WireFrame</summary>
-    <img src="https://github.com/user-attachments/assets/68a8aed5-4192-4f78-aef5-368de4c73bd7" alt="FilmFlyWireFrame" style="max-width: 100%;">
-</details>
-
-
-<br/><br/>
-# 📋 API 명세서 
-<details>
-    <summary>API 명세서</summary>
-    <img src="https://github.com/user-attachments/assets/8566c881-7a28-4061-b59a-a176d47c1538" alt="FilmFlyAPI" style="max-width: 100%;">
-
-[API Page](https://www.notion.so/881c458a10c5490596763ab364969407?v=ebdbcfe22004485d833995bdaed92ac3)
-</details>
 
 
 <br/><br/>
