@@ -75,7 +75,7 @@
 
 <br/><br/>
 # 🎨 ERD
-<img src="https://github.com/user-attachments/assets/a68fdd74-435f-4905-861d-56ce5254ff37" alt="FilmFlyERD" style="max-width: 100%;">
+<img src="https://github.com/user-attachments/assets/a0ea1f58-039f-4f03-9465-9ac4dd9df10c" alt="FilmFlyERD" style="max-width: 100%;">
 
 
 <br/><br/>

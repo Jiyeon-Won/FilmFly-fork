@@ -45,15 +45,9 @@ function checkLoginStatus() {
     const loginTime = localStorage.getItem('loginTime');
     const currentTime = new Date().getTime();
     const accessToken = getCookie('accessToken');
-    console.log("isLoggedIn: " + isLoggedIn);
-    console.log("loginTime: " + loginTime);
-    console.log("currentTime: " + currentTime);
-    console.log("accessToken: " + accessToken);
     // accessToken이 없으면 로그아웃 처리
     if (!accessToken) {
-        console.log("1번");
         if (isLoggedIn) {
-            console.log("2번");
             localStorage.setItem('isLoggedIn', 'false');
             localStorage.removeItem('loginTime');
         }
@@ -62,9 +56,7 @@ function checkLoginStatus() {
 
     // 로그인 시간이 설정되어 있고, 현재 시간이 로그인 시간보다 크면 세션 만료
     if (loginTime && currentTime > parseInt(loginTime)) {
-        console.log("3번");
         if (isLoggedIn) {
-            console.log("4번");
             localStorage.setItem('isLoggedIn', 'false');
             localStorage.removeItem('loginTime');
             alert('세션이 만료되었습니다. 다시 로그인해 주세요.');
@@ -73,7 +65,6 @@ function checkLoginStatus() {
         return false;
     }
 
-    console.log("로그인 되어 있음");
     return isLoggedIn;
 }
 

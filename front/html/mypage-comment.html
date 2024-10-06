@@ -56,7 +56,6 @@
   // URL에서 'user' 파라미터 값을 가져옵니다.
   const urlParams = new URLSearchParams(window.location.search);
   const userId = urlParams.get('user');
-  console.log("user id : " + userId);
 
   $(document).ready(function () {
     if(userId == null) {

@@ -146,9 +146,6 @@
                     // 로그인 성공 시 로컬 스토리지에 정보 저장
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('loginTime', new Date().getTime() + 14 * 24 * 60 * 60 * 1000); // 14일 후 만료
-                    console.log("isLoggedIn", localStorage.getItem('isLoggedIn'));
-                    console.log("loginTime", localStorage.getItem('loginTime'));
-                    console.log("accessToken", getCookie('accessToken'));
                     location.href = './index.html';
                 },
                 function (xhr, status, er) {
@@ -157,10 +154,8 @@
         });
 
         function kakaoCheck() {
-            console.log("카카오 체크");
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
-            console.log(`code 있음 : ${code}`);
             if (code) {
                 apiModule.GET(`/users/kakao/callback?code=${code}`,
                     function (response) {
