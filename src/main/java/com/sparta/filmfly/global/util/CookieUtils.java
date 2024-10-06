@@ -18,6 +18,7 @@ public abstract class CookieUtils {
     public static void addCookie(HttpServletResponse response, String name, String value, long maxAge) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
             .path("/")
+            .domain(".filmfly.shop")
             .httpOnly(false)
             .sameSite("None")
             .secure(true)
@@ -29,6 +30,7 @@ public abstract class CookieUtils {
     public static void addCookie(HttpServletResponse response, String name, String value, long maxAge, boolean isHttpOnly) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
             .path("/")
+            .domain(".filmfly.shop")
             .httpOnly(isHttpOnly)
             .sameSite("None")
             .secure(true)
