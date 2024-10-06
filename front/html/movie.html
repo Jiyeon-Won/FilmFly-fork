@@ -581,7 +581,6 @@
             let isDuplicate = false;
             for (let i = 0; i < lastMovies.length; i++) {
               if (lastMovies[i].id === movie.id && lastMovies[i].popularity === movie.popularity) {
-                console.log("중복된 영화: ", movie.id, movie.title);
                 isDuplicate = true;
                 break;
               }
@@ -671,7 +670,6 @@
 
   $(window).scroll(function(){
     if($(window).scrollTop() + 200 >= $(document).height() - $(window).height()) {
-      console.log("isLoading, hasNext", isLoading + ", " + hasNext);
       if(!isLoading && hasNext) {
         isLoading = true; //실행 불가능 상태로 변경
         loadMovies(lastPopularity);

@@ -427,30 +427,6 @@
 
 <script>
     $(document).ready(function () {
-        const genres = [
-            { id: 20, name: "액션" },         /*28*/
-            { id: 21, name: "모험" },         /*12*/
-            { id: 22, name: "애니메이션" },   /*16*/
-            { id: 23, name: "코미디" },       /*35*/
-            { id: 24, name: "범죄" },         /*80*/
-            { id: 25, name: "다큐멘터리" },   /*99*/
-            { id: 26, name: "드라마" },       /*18*/
-            { id: 27, name: "가족" },      /*10751*/
-            { id: 28, name: "판타지" },       /*14*/
-            { id: 29, name: "역사" },         /*36*/
-            { id: 30, name: "공포" },         /*27*/
-            { id: 31, name: "음악" },      /*10402*/
-            { id: 32, name: "미스터리" },   /*9648*/
-            { id: 33, name: "로맨스" },    /*10749*/
-            { id: 34, name: "SF" },          /*878*/
-            { id: 35, name: "TV 영화" },   /*10770*/
-            { id: 36, name: "스릴러" },       /*53*/
-            { id: 37, name: "전쟁" },      /*10752*/
-            { id: 38, name: "서부" }          /*37*/
-        ];
-        const randomIndex = Math.floor(Math.random() * genres.length);
-        const genre = genres[randomIndex];
-
         /* 랭킹 섹션 데이터 로딩 */
         loadCarouselData("/movies/trend", "ranking-carousel", "movie", true);
         /* 최신 리뷰 및 게시물 데이터 로딩 */
