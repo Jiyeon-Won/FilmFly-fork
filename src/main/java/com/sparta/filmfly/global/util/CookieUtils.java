@@ -56,9 +56,11 @@ public abstract class CookieUtils {
      * @param name      삭제할 쿠키의 이름
      */
     public static void deleteCookie(HttpServletResponse response, String name) {
-        Cookie cookie = new Cookie(name, null);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from(name, null)
+            .path("/")
+            .domain(".filmfly.shop")
+            .maxAge(0)
+            .build();
+        response.addHeader("Set-Cookie", cookie.toString());
     }
 }
