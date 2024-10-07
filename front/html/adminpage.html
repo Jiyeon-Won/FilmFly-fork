@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>FilmFly Admin</title>
+    <title>유저 관리 - FilmFly Admin</title>
     <!-- AdminLTE CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <!-- 부트스트랩 CSS -->
@@ -19,6 +19,9 @@
     <script src="../js/common.js"></script>
     <script src="../js/apiModule.js"></script>
     <style>
+        .main-sidebar {
+            width: 250px;
+        }
         #common-header {
             display: flex;
             width: 100%;
@@ -29,44 +32,54 @@
             display: flex;
             width: 100%;
         }
-
         .main-sidebar {
             width: 250px;
         }
         .content-wrapper {
-            display: flex;
-            flex-direction: column;
-            background-color: white;
-            align-items: center;
-            margin: 50px auto;
+            margin-top: 30px;
+            background-color:white;
+            width: 75%;
         }
-        .small-box {
+        .content {
             width: 100%;
-            max-width: 800px;
-            padding: 40px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            font-size: 2em;
-            text-align: center;
+            margin-right: 10px;
+            box-sizing: border-box;
         }
-        .bg-info {
-            background-color: #17a2b8 !important;
-            color: white;
+        .btn-group {
+            margin-bottom: 20px;
         }
-        .bg-success {
-            background-color: #28a745 !important;
-            color: white;
-        }
-        .bg-warning {
-            background-color: #ffc107 !important;
-            color: white;
-        }
-        .content{
-            width: 600px;
+        #userSearchForm {
+            margin-top: 20px;
             display: flex;
-            flex-direction: column;
-            margin-left: 100px;
         }
+        .form-group {
+            display: flex;
+            width: 70%;
+            margin-right: 10px;
+        }
+        #searchButton, #clearButton {
+            height: 40px;
+            margin-left: 10px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .pagination button {
+            margin: 0 5px;
+        }
+        #totalCount {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        tr[data-user-id]:hover {
+            transform: scaleY(1.1);
+            transition: transform 0.1s ease-in-out;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -91,7 +104,7 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <li class="nav-item">
-                            <a href="../html/adminpage-user-management.html" class="nav-link">
+                            <a href="../html/adminpage.html" class="nav-link">
                                 <i class="nav-icon fas fa-user"></i>
                                 <p>유저 관리</p>
                             </a>
@@ -113,37 +126,45 @@
             </div>
             <!-- /.sidebar -->
         </aside>
+
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
-                    <!-- Statistics Section -->
-                    <div class="small-box bg-info">
-                        <div class="inner">
-                            <h3 id="userCount">0</h3>
-                            <p>유저 수</p>
+                    <div id="mainDiv">
+                        <h2>유저 관리</h2>
+                        <form id="userSearchForm">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="search" placeholder="유저 이름 또는 닉네임">
+                            </div>
+                            <button type="button" id="searchButton" class="btn btn-primary">검색</button>
+                            <button type="button" id="clearButton" class="btn btn-secondary">초기화</button>
+                        </form>
+                        <div class="btn-group mt-3" role="group" aria-label="상태별 검색">
+                            <button type="button" class="btn btn-secondary status-filter" data-status="ALL">전체 유저</button>
+                            <button type="button" class="btn btn-secondary status-filter" data-status="ACTIVE">활성화 유저</button>
+                            <button type="button" class="btn btn-secondary status-filter" data-status="SUSPENDED">정지 유저</button>
+                            <button type="button" class="btn btn-secondary status-filter" data-status="DELETED">탈퇴 유저</button>
                         </div>
-                        <div class="icon">
-                            <i class="fas fa-users"></i>
+                        <div id="totalCount"></div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th>아이디</th>
+                                    <th>유저 이름</th>
+                                    <th>닉네임</th>
+                                    <th>역할</th>
+                                </tr>
+                                </thead>
+                                <tbody id="userSearchResults">
+                                <!-- 검색 결과 표시 -->
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
-                    <div class="small-box bg-warning">
-                        <div class="inner">
-                            <h3 id="movieCount">0</h3>
-                            <p>영화 수</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-film"></i>
-                        </div>
-                    </div>
-                    <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3 id="postCount">0</h3>
-                            <p>게시물 수</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-file-alt"></i>
+                        <div class="pagination" id="pagination">
+                            <!-- 페이징네이션 표시 -->
                         </div>
                     </div>
                 </div><!--/. container-fluid -->
@@ -157,14 +178,121 @@
 
 <script>
     $(document).ready(function() {
-        apiModule.GET('/admins/statistics', function(data) {
-            $('#userCount').text(data.data.userCount);
-            $('#postCount').text(data.data.boardCount);
-            $('#movieCount').text(data.data.movieCount);
-        }, function(error) {
-            console.error("Error fetching stats:", error);
+        function getUsers(search = '', status = '', page = 1) {
+            let url = `/admins/users?page=${page}&size=10`;
+
+            if (search) {
+                url += `&search=${search}`;
+            }
+
+            if (status && status !== 'ALL') {
+                url += `&status=${status}`;
+            }
+
+            apiModule.GET(url,
+                function(response) {
+                    renderUsers(response.data.users);
+                    renderPagination(response.data.totalPages, response.data.currentPage);
+                    $('#totalCount').text(`총 ${response.data.totalElements}명의 유저가 검색되었습니다.`);
+                    $('.status-filter').removeClass('active');
+                    if (status) {
+                        $(`.status-filter[data-status="${status}"]`).addClass('active');
+                    }
+                },
+                function(xhr) {
+                    alert(xhr.responseJSON.message);
+                }
+            );
+        }
+
+        function renderUsers(users) {
+            const results = users.map(user => `
+                <tr data-user-id="${user.id}">
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.nickname}</td>
+                    <td>${user.userRole}</td>
+                </tr>
+            `);
+            $('#userSearchResults').html(results.join(''));
+        }
+
+        function renderPagination(totalPages, currentPage) {
+            const pagination = $('#pagination');
+            pagination.empty();
+
+            const maxVisiblePages = 10;
+            const halfVisiblePages = Math.floor(maxVisiblePages / 2);
+
+            let startPage = Math.floor((currentPage - 1) / maxVisiblePages) * maxVisiblePages + 1;
+            let endPage = startPage + maxVisiblePages - 1;
+
+            if (endPage > totalPages) {
+                endPage = totalPages;
+            }
+
+            const previousPageSet = Math.max(startPage - maxVisiblePages, 1);
+            const nextPageSet = Math.min(startPage + maxVisiblePages, totalPages);
+
+            pagination.append(`<button class="btn btn-outline-primary" data-page="${previousPageSet}">이전</button>`);
+
+            for (let i = startPage; i <= endPage; i++) {
+                const button = $('<button>')
+                    .addClass('btn btn-outline-primary')
+                    .text(i)
+                    .data('page', i);
+
+                if (i === currentPage) {
+                    button.addClass('active');
+                }
+
+                pagination.append(button);
+            }
+
+            pagination.append(`<button class="btn btn-outline-primary" data-page="${nextPageSet}">다음</button>`);
+        }
+
+        $(document).on('click', '.pagination button', function() {
+            const page = $(this).data('page');
+            const search = $('#search').val().toLowerCase();
+            const status = $('.status-filter.active').data('status') || 'ALL';
+            getUsers(search, status, page);
         });
+
+        $('#searchButton').on('click', function() {
+            const search = $('#search').val().toLowerCase();
+            const status = $('.status-filter.active').data('status') || 'ALL';
+            getUsers(search, status);
+        });
+
+        $('#clearButton').on('click', function() {
+            $('#search').val('');
+            $('.status-filter').removeClass('active');
+            getUsers();
+        });
+
+        $('#search').on('keypress', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                $('#searchButton').click();
+            }
+        });
+
+        $('.status-filter').on('click', function() {
+            const status = $(this).data('status');
+            const search = $('#search').val().toLowerCase();
+            getUsers(search, status);
+        });
+
+        $(document).on('click', 'tr[data-user-id]', function() {
+            const userId = $(this).data('user-id');
+            window.location.href = `adminpage-user-detail.html?userId=${userId}`;
+        });
+
+        // 초기 로드 시 전체 유저 로드
+        getUsers();
     });
+
 </script>
 </body>
 </html>
