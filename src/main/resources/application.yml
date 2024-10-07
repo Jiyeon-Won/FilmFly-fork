@@ -59,6 +59,9 @@ spring:
       on-profile: local
 
   jpa:
+    properties:
+      hibernate:
+      format_sql: true
     hibernate:
       ddl-auto: none
 
@@ -115,7 +118,6 @@ spring:
   jpa:
     properties:
       hibernate:
-        show_sql: true
         format_sql: true
         connection:
           CharSet: utf-8
