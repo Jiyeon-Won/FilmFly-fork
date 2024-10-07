@@ -5,23 +5,20 @@ $(function () {
 
         // 초기 상태 설정
         updateAuthLinks();
+
+        logout();
     });
 });
 
-function checkLoginStatusWithoutCookie() {
-    let status = false;
-    apiModule.GET("/users/myInfo",
-        function (response) {
-            $('#loginLink').hide();
-            $('#signupLink').hide();
-            $('#logoutLink').show();
-            $('#myPageLink').show();
-        }, function () {
-            $('#loginLink').show();
-            $('#signupLink').show();
-            $('#logoutLink').hide();
-            $('#myPageLink').hide();
+function logout() {
+    $('#logoutLink').on('click', function () {
+        apiModule.POST("/users/logout", null, function (result, status, xhr) {
+            updateAuthLinks();
+            alert("로그아웃 성공");
+        }, function (xhr, status, er) {
+            alert("로그아웃 실패");
         });
+    });
 }
 
 // 로그인 상태에 따라 버튼 표시
