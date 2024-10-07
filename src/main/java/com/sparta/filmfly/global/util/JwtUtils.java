@@ -16,7 +16,7 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    public static final long ACCESS_TOKEN_TIME = 30 * 60 * 1000L * 60 * 60;
+    public static final long ACCESS_TOKEN_TIME = 30 * 60 * 1000L;
     public static final long REFRESH_TOKEN_TIME = 14 * 24 * 60 * 60 * 1000L;
 
     @Value("${jwt_secret_key}")
